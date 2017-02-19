@@ -41,7 +41,7 @@ if [ $? -eq 0 ]; then
   if [ $? -eq 0 ]; then
     echo 'CICO: build OK'
     # Publish to npm
-    ## TODO ##
+    npm run semantic-release
     if [ $? -eq 0 ]; then
       echo 'CICO: module pushed to npmjs.com'
       exit 0
