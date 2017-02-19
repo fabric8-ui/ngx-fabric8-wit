@@ -17,6 +17,30 @@ This library does not run on it's own. It must be imported.
 There are several services and a couple of models used by them available.
 
     Space Service
+  
+You must provide the URL to API to do the login. To do this, you must provide 
+a `string` with an OpaqueToken `WIT_API_URL` from `ngx-fabric8-wit`. We suggest using a
+factory provider for this. For example:
+
+````
+import { ApiLocatorService } from './api-locator.service';
+import { WIT_API_URL } from 'ngx-fabric8-wit';
+
+let authApiUrlFactory = (api: ApiLocatorService) => {
+  return api.witApiUrl;
+};
+
+export let witApiUrlProvider = {
+  provide: WIT_API_URL,
+  useFactory: witApiUrlFactory,
+  deps: [ApiLocatorService]
+};
+````
+
+NOTE: `ApiLocatorService` is a service that we use to construct API URLs using patterns determined
+by our application architecture, you can implement this part however you like.
+
+Finally you need to register `witApiUrlProvider` with a module or a component.
  
 
 ## Building it 
