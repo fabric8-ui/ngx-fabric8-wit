@@ -1,7 +1,7 @@
 {
-  "name": "ngx-login-client",
+  "name": "ngx-fabric8-wit",
   "version": "0.0.0-development",
-  "description": "Auth and User services for Angular v2 and up. Requires backend REST service.",
+  "description": "Common services for working with Fabric8 Work Item Tracker",
   "main": "bundles/login.umd.js",
   "module": "index.js",
   "typings": "index.d.ts",
