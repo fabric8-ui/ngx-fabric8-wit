@@ -41,7 +41,11 @@ if [ $? -eq 0 ]; then
   if [ $? -eq 0 ]; then
     echo 'CICO: build OK'
     # Publish to npm
+<<<<<<< c5390d0bae52ed043312be72bda8cc57c71971b9
     npm run semantic-release
+=======
+    docker exec ngx-fabric8-wit-builder npm run semantic-release
+>>>>>>> fix(build): enable semantic release in pipeline
     if [ $? -eq 0 ]; then
       echo 'CICO: module pushed to npmjs.com'
       exit 0
