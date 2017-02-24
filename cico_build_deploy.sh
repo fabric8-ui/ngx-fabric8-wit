@@ -7,11 +7,10 @@ set -x
 set -e
 
 # Export needed vars
-for var in BUILD_NUMBER BUILD_URL JENKINS_URL; do
+for var in BUILD_NUMBER BUILD_URL JENKINS_URL GIT_BRANCH; do
   export $(grep ${var} jenkins-env | xargs)
 done
 export BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%S`+00:00
-export GIT_BRANCH=`git branch | grep \* | cut -d ' ' -f2`
 
 # We need to disable selinux for now, XXX
 /usr/sbin/setenforce 0
