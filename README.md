@@ -83,3 +83,8 @@ Finally you need to register `witApiUrlProvider` with a module or a component.
  `npm publish dist/`  
 (_we don't want to publish the whole repo, just the built parts_)
 
+
+## Continuous Delivery & Semantic Relases
+
+TODO
+
