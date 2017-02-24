@@ -1,6 +1,6 @@
 {
   "name": "ngx-fabric8-wit",
-  "version": "0.0.0-development",
+  "version": "0.1.0",
   "description": "Common services for working with Fabric8 Work Item Tracker",
   "main": "bundles/ngx-fabric8-wit.umd.js",
   "module": "index.js",
