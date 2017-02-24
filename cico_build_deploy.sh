@@ -44,24 +44,16 @@ docker exec ngx-fabric8-wit-builder ./run_functional_tests.sh
 
 if [ $? -eq 0 ]; then
   echo 'CICO: functional tests OK'
-  docker exec ngx-fabric8-wit-builder npm run build
-  ## All ok, deploy
+  # Publish to npm
+  # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
+  docker exec ngx-fabric8-wit-builder git checkout master
+  docker exec ngx-fabric8-wit-builder npm -ddd run semantic-release
   if [ $? -eq 0 ]; then
-    echo 'CICO: build OK'
-    # Publish to npm
-    # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
-    docker exec ngx-fabric8-wit-builder git checkout master
-    docker exec ngx-fabric8-wit-builder npm -ddd run semantic-release
-    if [ $? -eq 0 ]; then
-      echo 'CICO: module pushed to npmjs.com'
-      exit 0
-    else
-      echo 'CICO: module push to npmjs.com failed'
-      exit 2
-    fi
+    echo 'CICO: module pushed to npmjs.com'
+    exit 0
   else
-    echo 'CICO: app tests Failed'
-    exit 1
+    echo 'CICO: module push to npmjs.com failed'
+    exit 2
   fi
 else
   echo 'CICO: functional tests FAIL'

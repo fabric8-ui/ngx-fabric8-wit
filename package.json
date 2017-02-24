@@ -17,7 +17,7 @@
     "rimraf": "rimraf",
     "test:unit": "karma start",
     "transpile": "./node_modules/.bin/ngc",
-    "semantic-release": "semantic-release pre && npm publish dist/ && semantic-release post"
+    "semantic-release": "semantic-release pre && npm run build && npm publish dist/ && semantic-release post"
   },
   "license": "Apache-2.0",
   "contributors": [
