@@ -49,6 +49,8 @@ if [ $? -eq 0 ]; then
   if [ $? -eq 0 ]; then
     echo 'CICO: build OK'
     # Publish to npm
+    # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
+    docker exec ngx-fabric8-wit-builder git checkout master
     docker exec ngx-fabric8-wit-builder npm run semantic-release
     if [ $? -eq 0 ]; then
       echo 'CICO: module pushed to npmjs.com'
