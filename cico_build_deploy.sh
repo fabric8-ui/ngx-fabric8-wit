@@ -49,6 +49,7 @@ if [ $? -eq 0 ]; then
   if [ $? -eq 0 ]; then
     echo 'CICO: build OK'
     # Publish to npm
+    docker exec ngx-fabric8-wit-builder touch .npmrc
     docker exec ngx-fabric8-wit-builder npm run semantic-release
     if [ $? -eq 0 ]; then
       echo 'CICO: module pushed to npmjs.com'
