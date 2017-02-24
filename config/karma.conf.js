@@ -26,6 +26,7 @@ module.exports = function(config) {
      * we are building the test environment in ./spec-bundle.js
      */
     files: [
+      { pattern: './src/assets/img/*', watched: false, included: false, served: true },
       { pattern: './config/spec-bundle.js', watched: false }
     ],
 
@@ -57,7 +58,7 @@ module.exports = function(config) {
      * possible values: 'dots', 'progress'
      * available reporters: https://npmjs.org/browse/keyword/karma-reporter
      */
-    reporters: [ 'mocha', 'coverage', 'remap-coverage' ],
+    reporters: [ 'mocha', 'coverage' ],
 
     // web server port
     port: 9876,
