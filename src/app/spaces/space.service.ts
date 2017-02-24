@@ -12,14 +12,14 @@ import { Space } from '../models/space';
 export class SpaceService {
 
   private headers = new Headers({ 'Content-Type': 'application/json' });
-  private spacesUrl;
+  private spacesUrl: string;
   private nextLink: string = null;
 
   // Array of all spaces that have been retrieved from the REST API.
   private spaces: Space[] = [];
   // Map of space instances with key = spaceId, and
   // value = array index of space in spaces array instance.
-  private spaceIdIndexMap = {};
+  private spaceIdIndexMap: { [spaceId:string] : number } = {};
 
   constructor(
     private http: Http,
