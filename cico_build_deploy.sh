@@ -6,6 +6,13 @@ set -x
 # Exit on error
 set -e
 
+# Export needed vars
+for var in BUILD_NUMBER BUILD_URL JENKINS_URL; do
+  export $(grep ${var} jenkins-env | xargs)
+done
+export BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%S`+00:00
+export GIT_BRANCH=`git branch | grep \* | cut -d ' ' -f2`
+
 # We need to disable selinux for now, XXX
 /usr/sbin/setenforce 0
 
@@ -16,7 +23,7 @@ service docker start
 
 # Build builder image
 docker build -t ngx-fabric8-wit-builder -f Dockerfile.builder .
-mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "API_URL=http://demo.api.almighty.io/api/" -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
+mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
 
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
