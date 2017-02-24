@@ -7,7 +7,7 @@ set -x
 set -e
 
 # Export needed vars
-for var in BUILD_NUMBER BUILD_URL JENKINS_URL GIT_BRANCH; do
+for var in BUILD_NUMBER BUILD_URL JENKINS_URL GIT_BRANCH GH_TOKEN NPM_TOKEN; do
   export $(grep ${var} jenkins-env | xargs)
 done
 export BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%S`+00:00
@@ -23,7 +23,7 @@ service docker start
 
 # Build builder image
 docker build -t ngx-fabric8-wit-builder -f Dockerfile.builder .
-mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -e "CI=true" -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
+mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -e "CI=true" -e GH_TOKEN -e NPM_TOKEN -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
 
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
