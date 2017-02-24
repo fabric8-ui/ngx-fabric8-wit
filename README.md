@@ -86,5 +86,5 @@ Finally you need to register `witApiUrlProvider` with a module or a component.
 
 ## Continuous Delivery & Semantic Relases
 
-TODO
+In ngx-fabric8-wit we use the [semantic-release plugin](https://github.com/semantic-release/semantic-release).
 
