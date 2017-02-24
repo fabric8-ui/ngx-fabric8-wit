@@ -86,5 +86,7 @@ Finally you need to register `witApiUrlProvider` with a module or a component.
 
 ## Continuous Delivery & Semantic Relases
 
-In ngx-fabric8-wit we use the [semantic-release plugin](https://github.com/semantic-release/semantic-release).
+In ngx-fabric8-wit we use the [semantic-release plugin](https://github.com/semantic-release/semantic-release). That means 
+that all you have to do is use the [AngularJS Commit Message Conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit)
+and send a pull request. Once the PR is merged, a new release will be automatically published to npmjs.com.
 
