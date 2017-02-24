@@ -17,12 +17,13 @@ export BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%S`+00:00
 
 # Get all the deps in
 yum -y install docker make git
+yum clean all
 sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --log-driver=journald --insecure-registry registry.ci.centos.org:5000"' /etc/sysconfig/docker
 service docker start
 
 # Build builder image
 docker build -t ngx-fabric8-wit-builder -f Dockerfile.builder .
-mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
+mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -e "CI=true" -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
 
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
@@ -39,6 +40,7 @@ fi
 
 ## Exec functional tests
 docker exec ngx-fabric8-wit-builder ./run_functional_tests.sh
+
 
 if [ $? -eq 0 ]; then
   echo 'CICO: functional tests OK'
