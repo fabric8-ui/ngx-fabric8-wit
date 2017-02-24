@@ -21,8 +21,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ENV = process.env.ENV = process.env.NODE_ENV = 'test';
 const FABRIC8_WIT_API_URL = process.env.FABRIC8_WIT_API_URL;
 const FABRIC8_RECOMMENDER_API_URL = process.env.FABRIC8_RECOMMENDER_API_URL || 'http://api-bayesian.dev.rdu2c.fabric8.io/api/v1/';
-const extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
-const extractSASS = new ExtractTextPlugin('stylesheets/[name].scss');
 
 /**
  * Webpack configuration
@@ -33,7 +31,7 @@ module.exports = function (options) {
   return {
 
     entry: {
-      // 'app': './src/main.browser.ts'
+      'app': './index.ts'
     },
 
     /**
@@ -56,14 +54,7 @@ module.exports = function (options) {
        *
        * See: http://webpack.github.io/docs/configuration.html#resolve-extensions
        */
-      extensions: ['', '.ts', '.js'],
-
-      /**
-       * Make sure root is src
-       */
-      //modules: [ path.resolve(__dirname, 'src'), 'node_modules' ]
-      root: helpers.root('src')
-
+      extensions: ['.ts', '.js']
     },
 
     /**
@@ -78,20 +69,6 @@ module.exports = function (options) {
      *
      * See: http://webpack.github.io/docs/configuration.html#module-preloaders-module-postloaders
      */
-    preLoaders: [
-
-        /**
-         * Tslint loader support for *.ts files
-         *
-         * See: https://github.com/wbuchwalter/tslint-loader
-         */
-        {
-          test: /\.ts$/,
-          loader: 'tslint-loader',
-          exclude: [helpers.root('node_modules')]
-        }
-
-      ],
 
       /**
        * An array of automatically applied loaders.
@@ -157,29 +134,8 @@ module.exports = function (options) {
 
         {
           test: /\.scss$/,
-          loaders: ["css-to-string", "css-loader", "sass-loader"]
+          loaders: ["css-to-string-loader", "css-loader", "sass-loader"]
         },
-        // {
-        //   test: /\.css$/,
-        //   exclude: helpers.root('src', 'app'),
-        //   loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
-        // },
-        // {
-        //   test: /\.css$/,
-        //   include: helpers.root('src', 'app'),
-        //   loader: 'raw!postcss'
-        // },
-        // {
-        //   test: /\.scss$/,
-        //   exclude: helpers.root('src', 'app'),
-        //   loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss!resolve-url!sass?sourceMap')
-        // },
-        // {
-        //   test: /\.scss$/,
-        //   include: helpers.root('src', 'app'),
-        //   loaders: ['exports-loader?module.exports.toString()', 'css', 'postcss', 'sass']
-        // },
-
         /**
          * Raw loader support for *.html
          * Returns file content as string
@@ -213,35 +169,11 @@ module.exports = function (options) {
     },
 
     /**
-     * An array of applied pre and post loaders.
-     *
-     * See: http://webpack.github.io/docs/configuration.html#module-preloaders-module-postloaders
-     */
-     postLoaders: [
-      /**
-       * Instruments JS files with Istanbul for subsequent code coverage reporting.
-       * Instrument only testing sources.
-       *
-       * See: https://github.com/deepsweet/istanbul-instrumenter-loader
-       */
-      {
-        test: /\.(js|ts)$/, loader: 'istanbul-instrumenter-loader',
-        include: helpers.root('src'),
-        exclude: [
-          /\.(e2e|spec)\.ts$/,
-          /node_modules/
-        ]
-      }
-    ],
-
-    /**
      * Add additional plugins to the compiler.
      *
      * See: http://webpack.github.io/docs/configuration.html#plugins
      */
     plugins: [
-      extractCSS,
-      extractSASS,
 
       /**
        * Plugin: DefinePlugin
