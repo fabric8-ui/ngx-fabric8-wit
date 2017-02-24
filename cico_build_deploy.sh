@@ -16,7 +16,7 @@ export BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%S`+00:00
 /usr/sbin/setenforce 0
 
 # Get all the deps in
-yum -y install docker make git
+yum -y install docker
 yum clean all
 sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --log-driver=journald --insecure-registry registry.ci.centos.org:5000"' /etc/sysconfig/docker
 service docker start
