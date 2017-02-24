@@ -1,9 +1,9 @@
 export default {
   entry: 'dist/index.js',
-  dest: 'dist/bundles/login.umd.js',
+  dest: 'dist/bundles/ngx-fabric8-wit.umd.js',
   sourceMap: false,
   format: 'umd',
-  moduleName: 'ng.login',
+  moduleName: 'ngx.fabric8.wit',
   globals: {
     '@angular/core': 'ng.core',
     '@angular/http': 'ng.http',
