@@ -90,6 +90,7 @@
     "copyfiles": "^1.0.0",
     "core-js": "^2.4.1",
     "cpy-cli": "1.0.1",
+    "cz-conventional-changelog": "^2.0.0",
     "extract-text-webpack-plugin": "2.0.0-beta.1",
     "ghooks": "1.2.4",
     "jasmine-core": "2.4.1",
@@ -133,6 +134,11 @@
     "branch": "master",
     "verifyConditions": {
       "path": "./node_modules/@krux/condition-jenkins"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }
