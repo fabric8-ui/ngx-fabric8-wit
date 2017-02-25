@@ -1,5 +1,5 @@
 # ngx-fabric8-wit
-Common services for working with the Fabric8 Work Item Tracker
+Common services for working with the Fabric8 Work Item Tracker.
 
 The work item tracker is located [here](https://github.com/almighty/almighty-core). 
 You can see how it is used in the front-end [here](https://github.com/fabric8io/fabric8-ui).
