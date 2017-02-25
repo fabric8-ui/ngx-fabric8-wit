@@ -49,8 +49,6 @@ fi
 ## Exec functional tests
 docker exec ngx-fabric8-wit-builder ./run_functional_tests.sh
 
-exit 1
-
 if [ $? -eq 0 ]; then
   echo 'CICO: functional tests OK'
   # Don't treat a publish failure as a build failure as this is confusing
