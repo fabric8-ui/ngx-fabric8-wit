@@ -76,12 +76,6 @@ Finally you need to register `witApiUrlProvider` with a module or a component.
  - to this:
  
    `"ngx-fabric8-wit": "file:/[LOCATION-TO-NODE-MODULES]/.nvm/versions/node/v6.9.1/lib/node_modules/ngx-fabric8-wit"`
- 
- 
-#### To publish it to NPM:
- 
- `npm publish dist/`  
-(_we don't want to publish the whole repo, just the built parts_)
 
 
 ## Continuous Delivery & Semantic Relases
