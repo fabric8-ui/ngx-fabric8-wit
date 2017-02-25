@@ -88,8 +88,8 @@ Finally you need to register `witApiUrlProvider` with a module or a component.
 
 In ngx-fabric8-wit we use the [semantic-release plugin](https://github.com/semantic-release/semantic-release). That means 
 that all you have to do is use the [AngularJS Commit Message Conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit)
-and send a pull request. Once the PR is merged, a new release will be automatically published to npmjs.com. The version will 
-be updated following semantic versionning rules.
+and send a pull request. Once the PR is merged, a new release will be automatically published to npmjs.com and a release tag
+created on github. The version will be updated following semantic versionning rules.
 
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
 format that includes a **type**, a **scope** and a **subject** ([full explanation](https://github.com/stevemao/conventional-changelog-angular/blob/master/convention.md)):
