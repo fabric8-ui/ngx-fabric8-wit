@@ -28,7 +28,7 @@ mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FAB
 # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
 docker exec ngx-fabric8-wit-builder git checkout master
 # Try to fix up the git repo so that npm publish can build the gitHead ref in to package.json
-docker exec ngx-fabric8-wit-builder sh -c 'git show-ref --head --heads | while IFS=" " read -r hash name; do test ! -e "${GIT_DIR:-.git}/$name" && echo $hash > "${GIT_DIR:-.git}/$name"; done'
+docker exec ngx-fabric8-wit-builder sh -c ./fix-git-repo.sh
 
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
