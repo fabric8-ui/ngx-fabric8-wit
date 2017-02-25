@@ -33,6 +33,9 @@ docker exec ngx-fabric8-wit-builder sh -c ./fix-git-repo.sh
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
 
+## Build prod
+docker exec ngx-fabric8-wit-builder npm run build
+
 ## Exec functional tests
 docker exec ngx-fabric8-wit-builder ./run_unit_tests.sh
 
@@ -55,8 +58,9 @@ if [ $? -eq 0 ]; then
     echo 'CICO: module pushed to npmjs.com'
     exit 0
   else
+    # Don't treat a publish failure as a build failure as this is confusing
     echo 'CICO: module push to npmjs.com failed'
-    exit 2
+    exit 0
   fi
 else
   echo 'CICO: functional tests FAIL'
