@@ -5,7 +5,7 @@ The work item tracker is located [here](https://github.com/almighty/almighty-cor
 You can see how it is used in the front-end [here](https://github.com/fabric8io/fabric8-ui).
 
 The system we build is composed of several components existing in separate repos but
-still needing access to common information, like who is logged. These services were 
+still needing access to common information, like how to manage spaces. These services were 
 extracted to provide a shared set of services. 
 
 ## Getting started:
