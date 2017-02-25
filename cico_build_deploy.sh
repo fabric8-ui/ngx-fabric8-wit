@@ -50,7 +50,7 @@ docker exec ngx-fabric8-wit-builder ./run_functional_tests.sh
 if [ $? -eq 0 ]; then
   echo 'CICO: functional tests OK'
   # Publish to npm
-  docker exec ngx-fabric8-wit-builder npm -ddd run semantic-release
+  docker exec ngx-fabric8-wit-builder npm run semantic-release
   if [ $? -eq 0 ]; then
     echo 'CICO: module pushed to npmjs.com'
     exit 0
