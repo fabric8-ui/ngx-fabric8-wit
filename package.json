@@ -63,8 +63,7 @@
     "node": ">= 6.9.1",
     "npm": ">= 3"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@angular/core": "^2.0.0",
     "@angular/http": "^2.0.0",
@@ -93,6 +92,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "extract-text-webpack-plugin": "2.0.0-beta.1",
     "ghooks": "1.2.4",
+    "husky": "^0.13.1",
     "jasmine-core": "2.4.1",
     "karma": "1.2.0",
     "karma-chrome-launcher": "2.0.0",
@@ -121,6 +121,7 @@
     "typedoc": "^0.5.1",
     "typescript": "2.0.8",
     "uglify-js": "^2.7.5",
+    "validate-commit-msg": "^2.11.1",
     "webpack": "2.1.0-beta.22",
     "webpack-dashboard": "^0.2.0",
     "webpack-dev-middleware": "1.7.0",
