@@ -117,3 +117,4 @@ perf(pencil): remove graphiteWidth option
 
 BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite width of 10mm is always used for performance reason.
 ```
+If you introduce a change other than a fix, a feat or a BREAKING CHANGE then no release will be performed.
