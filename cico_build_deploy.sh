@@ -26,8 +26,8 @@ docker build -t ngx-fabric8-wit-builder -f Dockerfile.builder .
 mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -e "CI=true" -e GH_TOKEN -e NPM_TOKEN -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
 
 # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
-docker exec ngx-fabric8-wit-builder git tag
 docker exec ngx-fabric8-wit-builder git checkout master
+docker exec ngx-fabric8-wit-builder git log
 
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
