@@ -61,4 +61,3 @@ else
   echo 'CICO: functional tests FAIL'
   exit 1
 fi
-
