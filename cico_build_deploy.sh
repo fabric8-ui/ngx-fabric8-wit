@@ -25,6 +25,10 @@ service docker start
 docker build -t ngx-fabric8-wit-builder -f Dockerfile.builder .
 mkdir -p dist && docker run --detach=true --name=ngx-fabric8-wit-builder -e "FABRIC8_WIT_API_URL=http://api.openshift.io/api/" -e JENKINS_URL -e GIT_BRANCH -e "CI=true" -e GH_TOKEN -e NPM_TOKEN -t -v $(pwd)/dist:/dist:Z ngx-fabric8-wit-builder
 
+# In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
+docker exec ngx-fabric8-wit-builder git tag
+docker exec ngx-fabric8-wit-builder git checkout master
+
 # Build almigty-ui
 docker exec ngx-fabric8-wit-builder npm install
 
@@ -45,9 +49,6 @@ docker exec ngx-fabric8-wit-builder ./run_functional_tests.sh
 if [ $? -eq 0 ]; then
   echo 'CICO: functional tests OK'
   # Publish to npm
-  # In order to run semantic-release we need a non detached HEAD, see https://github.com/semantic-release/semantic-release/issues/329
-  docker exec ngx-fabric8-wit-builder git fetch -t origin
-  docker exec ngx-fabric8-wit-builder git checkout master
   docker exec ngx-fabric8-wit-builder npm -ddd run semantic-release
   if [ $? -eq 0 ]; then
     echo 'CICO: module pushed to npmjs.com'
