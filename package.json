@@ -11,14 +11,14 @@
     "clean": "npm cache clean && npm run rimraf -- node_modules doc coverage dist",
     "cleanup": "rimraf dist/package.json dist/bundles dist/src dist/index.d.ts dist/index.metadata.json dist/index.js dist/index.js.map dist/LICENSE dist/README.md",
     "commitmsg": "validate-commit-msg",
-    "copy-files": "copyfiles LICENSE README.md package.json .git/** dist",
+    "copy-files": "copyfiles LICENSE README.md package.json",
     "minify": "uglifyjs dist/bundles/ngx-fabric8-wit.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/ngx-fabric8-wit.umd.js",
     "reinstall": "npm run clean && npm install",
     "remove-dist": "rimraf dist",
     "rimraf": "rimraf",
     "test:unit": "karma start",
     "transpile": "./node_modules/.bin/ngc",
-    "semantic-release": "semantic-release pre && npm run build && npm publish dist/ && semantic-release post"
+    "semantic-release": "semantic-release pre && npm run build && cp -r .git dist && npm publish dist/ && semantic-release post"
   },
   "license": "Apache-2.0",
   "contributors": [
