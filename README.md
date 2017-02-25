@@ -88,5 +88,38 @@ Finally you need to register `witApiUrlProvider` with a module or a component.
 
 In ngx-fabric8-wit we use the [semantic-release plugin](https://github.com/semantic-release/semantic-release). That means 
 that all you have to do is use the [AngularJS Commit Message Conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit)
-and send a pull request. Once the PR is merged, a new release will be automatically published to npmjs.com.
+and send a pull request. Once the PR is merged, a new release will be automatically published to npmjs.com. The version will 
+be updated following semantic versionning rules.
 
+Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
+format that includes a **type**, a **scope** and a **subject** ([full explanation](https://github.com/stevemao/conventional-changelog-angular/blob/master/convention.md)):
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+You can simplify using this convention for yourself and contributors by using [commitizen](https://github.com/commitizen/cz-cli) and [validate-commit-msg](https://github.com/kentcdodds/validate-commit-msg).
+
+### Patch Release
+
+```
+fix(pencil): stop graphite breaking when too much pressure applied
+```
+
+### ~~Minor~~ Feature Release
+
+```
+feat(pencil): add 'graphiteWidth' option
+```
+
+### ~~Major~~ Breaking Release
+
+```
+perf(pencil): remove graphiteWidth option
+
+BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite width of 10mm is always used for performance reason.
+```
