@@ -1,4 +1,7 @@
 # ngx-fabric8-wit
+
+[![Build Status](https://ci.centos.org/buildStatus/icon?job=devtools-ngx-fabric8-wit-npm-publish-build-master)](https://ci.centos.org/view/Devtools/job/devtools-ngx-fabric8-wit-npm-publish-build-master/)
+
 Common services for working with the Fabric8 Work Item Tracker.
 
 The work item tracker is located [here](https://github.com/almighty/almighty-core). 
