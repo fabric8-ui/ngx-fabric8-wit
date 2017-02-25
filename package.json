@@ -10,6 +10,7 @@
     "bundle": "rollup -c",
     "clean": "npm cache clean && npm run rimraf -- node_modules doc coverage dist",
     "cleanup": "rimraf dist/package.json dist/bundles dist/src dist/index.d.ts dist/index.metadata.json dist/index.js dist/index.js.map dist/LICENSE dist/README.md",
+    "commitmsg": "validate-commit-msg",
     "copy-files": "copyfiles LICENSE README.md package.json .git/** dist",
     "minify": "uglifyjs dist/bundles/ngx-fabric8-wit.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/ngx-fabric8-wit.umd.js",
     "reinstall": "npm run clean && npm install",
