@@ -13,6 +13,7 @@ export class SpaceService {
 
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private spacesUrl: string;
+  private namedSpacesUrl: string;
   private nextLink: string = null;
 
   // Array of all spaces that have been retrieved from the REST API.
@@ -30,6 +31,7 @@ export class SpaceService {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
     }
     this.spacesUrl = apiUrl + 'spaces';
+    this.namedSpacesUrl = apiUrl + 'namedspaces';
   }
 
   getSpaces(pageSize: number = 20): Promise<Space[]> {
@@ -44,6 +46,24 @@ export class SpaceService {
       return this.getSpacesDelegate(this.nextLink, isAll);
     } else {
       return Promise.reject('No more item found');
+    }
+  }
+
+  getSpaceByName(userName: string, spaceName: string): Promise<Space> {
+    let result = this.spaces.find(space => space.attributes.name === spaceName);
+    if (result == null) {
+      let url = `${this.namedSpacesUrl}/${userName}/${spaceName}`;
+      return this.http.get(url, { headers: this.headers } )
+        .toPromise()
+        .then((response) => {
+          let space: Space = response.json().data as Space;
+          this.spaces.splice(this.spaces.length, 0, space);
+          this.buildSpaceIndexMap();
+          return space;
+        })
+        .catch (this.handleError);
+    } else {
+      return Promise.resolve(result);
     }
   }
 

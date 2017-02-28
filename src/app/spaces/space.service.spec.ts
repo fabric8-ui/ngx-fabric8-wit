@@ -143,4 +143,22 @@ describe('Service: SpaceService', () => {
       });
   }));
 
+  it('Get a single space', async(() => {
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify({data: responseData[0]}),
+          status: 200
+        })
+      ));
+    });
+
+    let userName = "testuser";
+
+    spaceService.getSpaceByName(userName,responseData[0].attributes.name)
+      .then(data => {
+        expect(data).toEqual(expectedResponse[0]);
+      });
+  }));
+
 });
