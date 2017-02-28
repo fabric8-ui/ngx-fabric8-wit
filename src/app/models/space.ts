@@ -4,7 +4,6 @@ import { ProcessTemplate } from './process-template';
 export interface Space {
     name: string;
     path: String;
-    description: String;
     process?: ProcessTemplate;
     privateSpace?: boolean;
     teams: Team[];
@@ -33,6 +32,7 @@ export class SpaceRelatedLink {
 
 export class SpaceAttributes {
     name: string;
+    description: string;
     'updated-at': string;
     'created-at': string;
     version: number;
