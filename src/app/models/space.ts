@@ -12,6 +12,23 @@ export interface Space {
     id: string;
     attributes: SpaceAttributes;
     type: string;
+    links: SpaceLink;
+    relationships: SpaceRelationships;
+}
+
+export class SpaceLink {
+    self: string;
+}
+
+export class SpaceRelationships {
+    areas: SpaceRelatedLink;
+    iterations: SpaceRelatedLink;
+}
+
+export class SpaceRelatedLink {
+    links: {
+        related: string
+    };
 }
 
 export class SpaceAttributes {
