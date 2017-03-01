@@ -1,7 +1,12 @@
+import 'rxjs/add/observable/of';
+
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 
 import { cloneDeep } from 'lodash';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observer } from 'rxjs/Observer';
 
 import { WIT_API_URL } from '../api/wit-api';
 import { AuthenticationService, Logger } from 'ngx-login-client';
@@ -15,8 +20,13 @@ export class SpaceService {
   private spacesUrl: string;
   private nextLink: string = null;
 
+  private currentSpaceSubjectSource: BehaviorSubject<Space> = null;
+  private currentSpaceBus: Observable<Space> = null;
+
   // Array of all spaces that have been retrieved from the REST API.
   private spaces: Space[] = [];
+  // the current selected space
+  private currentSpace: Space = null;
   // Map of space instances with key = spaceId, and
   // value = array index of space in spaces array instance.
   private spaceIdIndexMap: { [spaceId:string] : number } = {};
@@ -30,6 +40,29 @@ export class SpaceService {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
     }
     this.spacesUrl = apiUrl + 'spaces';
+  }
+
+  getCurrentSpace(): Promise<Space> {
+    if (this.currentSpace) {
+      return Observable.of(this.currentSpace).toPromise();
+    } else {
+      let observable = Observable.create((observer: Observer<Space>) => {
+        this.getSpaces().then((spaces: Space[]) => {
+          observer.next(this.currentSpace);
+          observer.complete();
+        });
+      });
+      return observable.toPromise();
+    }
+  }
+
+  switchToSpace(newSpace: Space) {
+    this.currentSpace = newSpace;
+    this.currentSpaceSubjectSource.next(newSpace);
+  }
+
+  getCurrentSpaceBus(): Observable<Space> {
+    return this.currentSpaceBus;
   }
 
   getSpaces(pageSize: number = 20): Promise<Space[]> {
@@ -66,6 +99,12 @@ export class SpaceService {
         let newItems = cloneDeep(newSpaces);
         // Update the existing spaces list with new data
         this.updateSpacesList(newItems);
+        // set the current space (the first entry for now) and create the broadcaster
+        if (!this.currentSpace) {
+          this.currentSpace = this.spaces[0];
+          this.currentSpaceSubjectSource = new BehaviorSubject<Space>(this.currentSpace);
+          this.currentSpaceBus = this.currentSpaceSubjectSource.asObservable();
+        }
         if (isAll) {
           return this.spaces;
         } else {
