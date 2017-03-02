@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { Headers, Http, URLSearchParams } from '@angular/http';
 
 import { cloneDeep } from 'lodash';
 
@@ -14,6 +14,7 @@ export class SpaceService {
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private spacesUrl: string;
   private namedSpacesUrl: string;
+  private searchSpacesUrl: string;
   private nextLink: string = null;
 
   // Array of all spaces that have been retrieved from the REST API.
@@ -32,6 +33,7 @@ export class SpaceService {
     }
     this.spacesUrl = apiUrl + 'spaces';
     this.namedSpacesUrl = apiUrl + 'namedspaces';
+    this.searchSpacesUrl = apiUrl + 'search/spaces';
   }
 
   getSpaces(pageSize: number = 20): Promise<Space[]> {
@@ -129,6 +131,23 @@ export class SpaceService {
       })
       .catch(this.handleError);
   }
+
+  search(searchText: string): Promise<Space[]> {
+    let url = this.searchSpacesUrl;
+    let params: URLSearchParams = new URLSearchParams();
+    params.set("q", searchText);
+
+    return this.http
+      .get(url, {search: params, headers: this.headers})
+      .toPromise()
+      .then(response => {
+        // Extract data from JSON API response, and assert to an array of spaces.
+        let newSpaces: Space[] = response.json().data as Space[];
+        return newSpaces;
+      })
+      .catch(this.handleError);
+  }
+
 
   // Adds or updates the client-local list of spaces,
   // with spaces retrieved from the server, usually as a page in a paginated collection.

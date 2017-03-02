@@ -161,4 +161,22 @@ describe('Service: SpaceService', () => {
       });
   }));
 
+  it('Search a space by name', async(() => {
+    let matchedData: Space = cloneDeep(responseData[0]);
+
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify({data: matchedData}),
+          status: 200
+        })
+      ));
+    });
+
+    spaceService.search("test")
+      .then(data => {
+        expect(data).toEqual(matchedData);
+      });
+  }));
+
 });
