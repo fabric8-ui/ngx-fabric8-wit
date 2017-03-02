@@ -135,6 +135,9 @@ export class SpaceService {
   search(searchText: string): Promise<Space[]> {
     let url = this.searchSpacesUrl;
     let params: URLSearchParams = new URLSearchParams();
+    if (searchText == '') {
+      searchText = '*';
+    }
     params.set("q", searchText);
 
     return this.http
