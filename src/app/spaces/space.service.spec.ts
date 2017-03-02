@@ -71,7 +71,22 @@ describe('Service: SpaceService', () => {
         'version': 0
       },
       'id': '1',
-      'type': 'spaces'
+      'type': 'spaces',
+      'links': {
+        'self': 'http://example.com/api/spaces/1'
+      },
+      'relationships': {
+        areas: {
+          links: {
+            related: 'http://example.com/api/spaces/1/areas'
+          }
+        },
+        iterations: {
+          links: {
+            related: 'http://example.com/api/spaces/1/iterations'
+          }
+        }
+      }
     }
   ];
   let response = { data: responseData, links: {} };
