@@ -1,6 +1,6 @@
 export default {
   entry: 'dist/index.js',
-  dest: 'dist/bundles/ngx-fabric8-wit.umd.js',
+  dest: 'dist/bundles/ngx-fabric8-wit.js',
   sourceMap: false,
   format: 'umd',
   moduleName: 'ngx.fabric8.wit',
@@ -8,6 +8,8 @@ export default {
     '@angular/core': 'ng.core',
     '@angular/http': 'ng.http',
     '@angular/router': 'ng.router',
+    'lodash': 'lodash',
+    'ngx-login-client': 'LoginModule',
     'rxjs/Observable': 'Rx',
     'rxjs/Subject': 'Rx',
     'rxjs/ReplaySubject': 'Rx',
