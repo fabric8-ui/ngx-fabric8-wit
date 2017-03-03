@@ -103,7 +103,7 @@ describe('Service: SpaceService', () => {
       ));
     });
 
-    spaceService.getSpaces().then(data => {
+    spaceService.getSpaces().subscribe(data => {
       expect(data).toEqual(expectedResponse);
     });
   }));
@@ -119,7 +119,7 @@ describe('Service: SpaceService', () => {
     });
 
     spaceService.create(responseData[0])
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(expectedResponse[0]);
       });
   }));
@@ -138,7 +138,7 @@ describe('Service: SpaceService', () => {
     });
 
     spaceService.update(updatedData)
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(updatedData);
       });
   }));
@@ -156,7 +156,7 @@ describe('Service: SpaceService', () => {
     let userName = "testuser";
 
     spaceService.getSpaceByName(userName,responseData[0].attributes.name)
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(expectedResponse[0]);
       });
   }));
@@ -174,7 +174,7 @@ describe('Service: SpaceService', () => {
     });
 
     spaceService.search("test")
-      .then(data => {
+      .subscribe(data => {
         expect(data).toEqual(matchedData);
       });
   }));

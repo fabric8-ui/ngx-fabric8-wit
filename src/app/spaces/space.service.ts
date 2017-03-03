@@ -1,11 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams } from '@angular/http';
-
 import { cloneDeep } from 'lodash';
+import { AuthenticationService, Logger } from 'ngx-login-client';
+import { Observable } from "rxjs";
 
 import { WIT_API_URL } from '../api/wit-api';
-import { AuthenticationService, Logger } from 'ngx-login-client';
-
 import { Space } from '../models/space';
 
 @Injectable()
@@ -36,44 +35,42 @@ export class SpaceService {
     this.searchSpacesUrl = apiUrl + 'search/spaces';
   }
 
-  getSpaces(pageSize: number = 20): Promise<Space[]> {
+  getSpaces(pageSize: number = 20): Observable<Space[]> {
     let url = this.spacesUrl + '?page[limit]=' + pageSize;
     let isAll = true;
     return this.getSpacesDelegate(url, isAll);
   }
 
-  getMoreSpaces(): Promise<any> {
+  getMoreSpaces(): Observable<Space[]> {
     if (this.nextLink) {
       let isAll = false;
       return this.getSpacesDelegate(this.nextLink, isAll);
     } else {
-      return Promise.reject('No more item found');
+      return Observable.throw('No more spaces found');
     }
   }
 
-  getSpaceByName(userName: string, spaceName: string): Promise<Space> {
+  getSpaceByName(userName: string, spaceName: string): Observable<Space> {
     let result = this.spaces.find(space => space.attributes.name === spaceName);
     if (result == null) {
       let url = `${this.namedSpacesUrl}/${userName}/${spaceName}`;
       return this.http.get(url, { headers: this.headers } )
-        .toPromise()
-        .then((response) => {
+        .map((response) => {
           let space: Space = response.json().data as Space;
           this.spaces.splice(this.spaces.length, 0, space);
           this.buildSpaceIndexMap();
           return space;
         })
-        .catch (this.handleError);
+        .catch(this.handleError);
     } else {
-      return Promise.resolve(result);
+      return Observable.from([result]);
     }
   }
 
-  getSpacesDelegate(url: string, isAll: boolean): Promise<any> {
+  getSpacesDelegate(url: string, isAll: boolean): Observable<Space[]> {
     return this.http
       .get(url, { headers: this.headers })
-      .toPromise()
-      .then(response => {
+      .map(response => {
         // Extract links from JSON API response.
         // and set the nextLink, if server indicates more resources
         // in paginated collection through a 'next' link.
@@ -97,13 +94,12 @@ export class SpaceService {
       .catch(this.handleError);
   }
 
-  create(space: Space): Promise<Space> {
+  create(space: Space): Observable<Space> {
     let url = this.spacesUrl;
     let payload = JSON.stringify({ data: space });
     return this.http
       .post(url, payload, { headers: this.headers })
-      .toPromise()
-      .then(response => {
+      .map(response => {
         let newSpace: Space = response.json().data as Space;
         // Add the newly created space at the top of the spaces list.
         this.spaces.splice(0, 0, newSpace);
@@ -113,13 +109,12 @@ export class SpaceService {
       }).catch(this.handleError);
   }
 
-  update(space: Space): Promise<Space> {
+  update(space: Space): Observable<Space> {
     let url = `${this.spacesUrl}/${space.attributes.name}`;
     let payload = JSON.stringify({data: space});
     return this.http
       .patch(url, payload, {headers: this.headers})
-      .toPromise()
-      .then(response => {
+      .map(response => {
         let updatedSpace = response.json().data as Space;
         // Find the index in the big list
         let updateIndex = this.spaces.findIndex(item => item.id == updatedSpace.id);
@@ -132,7 +127,7 @@ export class SpaceService {
       .catch(this.handleError);
   }
 
-  search(searchText: string): Promise<Space[]> {
+  search(searchText: string): Observable<Space[]> {
     let url = this.searchSpacesUrl;
     let params: URLSearchParams = new URLSearchParams();
     if (searchText == '') {
@@ -142,8 +137,7 @@ export class SpaceService {
 
     return this.http
       .get(url, {search: params, headers: this.headers})
-      .toPromise()
-      .then(response => {
+      .map(response => {
         // Extract data from JSON API response, and assert to an array of spaces.
         let newSpaces: Space[] = response.json().data as Space[];
         return newSpaces;
@@ -177,8 +171,8 @@ export class SpaceService {
     });
   }
 
-  private handleError(error: any): Promise<any> {
+  private handleError(error: any) {
     this.logger.error(error);
-    return Promise.reject(error.message || error);
+    return Observable.throw(error.message || error);
   }
 }
