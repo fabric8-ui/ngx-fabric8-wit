@@ -110,7 +110,7 @@ export class SpaceService {
   }
 
   update(space: Space): Observable<Space> {
-    let url = `${this.spacesUrl}/${space.attributes.name}`;
+    let url = `${this.spacesUrl}/${space.id}`;
     let payload = JSON.stringify({data: space});
     return this.http
       .patch(url, payload, {headers: this.headers})
