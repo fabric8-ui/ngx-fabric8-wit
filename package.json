@@ -113,7 +113,6 @@
     "gulp-uglify": "2.0.1",
     "cz-conventional-changelog": "2.0.0",
     "css-loader": "0.26.2",
-    "css-to-string-loader": "0.1.2",
     "del": "2.2.2",
     "exports-loader": "0.6.4",
     "expose-loader": "0.7.3",
