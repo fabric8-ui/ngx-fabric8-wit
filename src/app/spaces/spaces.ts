@@ -1,6 +1,6 @@
 import { Space } from './../models/space';
 import { Observable } from 'rxjs';
-export interface Spaces {
+export class Spaces {
 
   /**
    * An observable which pushes changes to the current space.

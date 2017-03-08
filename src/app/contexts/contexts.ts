@@ -1,6 +1,6 @@
 import { Context } from './context';
 import { Observable } from 'rxjs';
-export interface Contexts {
+export class Contexts {
   /**
    * An observable which pushes changes to the array of recent contexts.
    * It is backed by a multicasted replay subject so you will always received
