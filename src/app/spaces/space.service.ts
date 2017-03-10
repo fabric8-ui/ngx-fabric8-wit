@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams } from '@angular/http';
 import { cloneDeep } from 'lodash';
-import { AuthenticationService, Logger } from 'ngx-login-client';
+import { AuthenticationService, Logger, User, UserService } from 'ngx-login-client';
 import { Observable } from "rxjs";
 
 import { WIT_API_URL } from '../api/wit-api';
@@ -22,10 +22,14 @@ export class SpaceService {
   // value = array index of space in spaces array instance.
   private spaceIdIndexMap: { [spaceId:string] : number } = {};
 
+  // Map to store all user Ids
+  private userIdMap: { [userId:string] : User } = {};
+
   constructor(
     private http: Http,
     private logger: Logger,
     private auth: AuthenticationService,
+    private userService: UserService,
     @Inject(WIT_API_URL) apiUrl: string) {
     if (this.auth.getToken() != null) {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
@@ -56,7 +60,9 @@ export class SpaceService {
       let url = `${this.namedSpacesUrl}/${userName}/${spaceName}`;
       return this.http.get(url, { headers: this.headers } )
         .map((response) => {
+          this.buildUserIdMap();
           let space: Space = response.json().data as Space;
+          this.resolveUsersForSpace(space);
           this.spaces.splice(this.spaces.length, 0, space);
           this.buildSpaceIndexMap();
           return space;
@@ -71,6 +77,7 @@ export class SpaceService {
     return this.http
       .get(url, { headers: this.headers })
       .map(response => {
+        this.buildUserIdMap();
         // Extract links from JSON API response.
         // and set the nextLink, if server indicates more resources
         // in paginated collection through a 'next' link.
@@ -82,6 +89,9 @@ export class SpaceService {
         }
         // Extract data from JSON API response, and assert to an array of spaces.
         let newSpaces: Space[] = response.json().data as Space[];
+        newSpaces.forEach((newSpace) => {
+          this.resolveUsersForSpace(newSpace);
+        });
         let newItems = cloneDeep(newSpaces);
         // Update the existing spaces list with new data
         this.updateSpacesList(newItems);
@@ -100,7 +110,9 @@ export class SpaceService {
     return this.http
       .post(url, payload, { headers: this.headers })
       .map(response => {
+        this.buildUserIdMap();
         let newSpace: Space = response.json().data as Space;
+        this.resolveUsersForSpace(newSpace);
         // Add the newly created space at the top of the spaces list.
         this.spaces.splice(0, 0, newSpace);
         // Rebuild the map after updating the list
@@ -116,7 +128,9 @@ export class SpaceService {
     return this.http
       .patch(url, payload, {headers: this.headers})
       .map(response => {
+        this.buildUserIdMap();
         let updatedSpace = response.json().data as Space;
+        this.resolveUsersForSpace(updatedSpace);
         // Find the index in the big list
         let updateIndex = this.spaces.findIndex(item => item.id == updatedSpace.id);
         if (updateIndex > -1) {
@@ -139,8 +153,12 @@ export class SpaceService {
     return this.http
       .get(url, {search: params, headers: this.headers})
       .map(response => {
+        this.buildUserIdMap();
         // Extract data from JSON API response, and assert to an array of spaces.
         let newSpaces: Space[] = response.json().data as Space[];
+        newSpaces.forEach((newSpace) => {
+          this.resolveUsersForSpace(newSpace);
+        });
         return newSpaces;
       })
       .catch((error) => { return this.handleError(error)});
@@ -175,5 +193,53 @@ export class SpaceService {
   private handleError(error: any) {
     this.logger.error(error);
     return Observable.throw(error.message || error);
+  }
+
+  private resolveUsersForSpace(space: Space): void {
+    if (!space.hasOwnProperty('relationalData')) {
+      space.relationalData = {};
+    }
+    this.resolveOwner(space);
+  }
+
+  private resolveOwner(space: Space) {
+    if (!space.relationships.hasOwnProperty('owned-by') || !space.relationships['owned-by']) {
+      space.relationalData.creator = null;
+      return;
+    }
+    if (!space.relationships['owned-by'].hasOwnProperty('data')) {
+      space.relationalData.creator = null;
+      return;
+    }
+    if (!space.relationships['owned-by'].data) {
+      space.relationalData.creator = null;
+      return;
+    }
+    space.relationalData.creator = this.getUserById(space.relationships['owned-by'].data.id);
+  }
+
+  private getUserById(userId: string): User {
+    if (userId in this.userIdMap) {
+      return this.userIdMap[userId];
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Usage: Build a ID-User map to dynamically access list of users
+   * This method takes the locally saved list of users from User Service
+   * The method assumes the users to have been fetched before hand using the UserService.
+   */
+  buildUserIdMap(): void {
+    // Fetch the current updated locally saved user list
+    let users: User[] = this.userService.getLocallySavedUsers() as User[];
+    // Check if the map is outdated or not and if yes then rebuild it
+    if (Object.keys(this.userIdMap).length < users.length) {
+      this.userIdMap = {};
+      users.forEach((user) => {
+        this.userIdMap[user.id] = user;
+      });
+    }
   }
 }

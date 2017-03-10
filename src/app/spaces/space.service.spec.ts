@@ -4,7 +4,7 @@ import { MockBackend } from '@angular/http/testing';
 
 import { cloneDeep } from 'lodash';
 
-import { AuthenticationService, Logger } from 'ngx-login-client';
+import {AuthenticationService, Logger, UserService, Broadcaster, AUTH_API_URL} from 'ngx-login-client';
 
 import { WIT_API_URL } from "../api/wit-api";
 import { Space } from '../models/space';
@@ -44,7 +44,13 @@ describe('Service: SpaceService', () => {
         {
           provide: WIT_API_URL,
           useValue: "http://example.com"
-        }
+        },
+        {
+          provide: AUTH_API_URL,
+          useValue: 'http://example.com/auth'
+        },
+        UserService,
+        Broadcaster
       ]
     });
   });
@@ -85,6 +91,12 @@ describe('Service: SpaceService', () => {
           links: {
             related: 'http://example.com/api/spaces/1/iterations'
           }
+        },
+        'owned-by': {
+          'data': {
+            'id': '00000000-0000-0000-0000-000000000000',
+            'type': 'identities'
+          }
         }
       }
     }
@@ -103,8 +115,10 @@ describe('Service: SpaceService', () => {
       ));
     });
 
-    spaceService.getSpaces().subscribe(data => {
-      expect(data).toEqual(expectedResponse);
+    spaceService.getSpaces().subscribe((data: Space[]) => {
+      expect(data[0].id).toEqual(expectedResponse[0].id);
+      expect(data[0].attributes.name).toEqual(expectedResponse[0].attributes.name);
+      expect(data[0].attributes.description).toEqual(expectedResponse[0].attributes.description);
     });
   }));
 
@@ -119,8 +133,10 @@ describe('Service: SpaceService', () => {
     });
 
     spaceService.create(responseData[0])
-      .subscribe(data => {
-        expect(data).toEqual(expectedResponse[0]);
+      .subscribe((data: Space) => {
+        expect(data.id).toEqual(expectedResponse[0].id);
+        expect(data.attributes.name).toEqual(expectedResponse[0].attributes.name);
+        expect(data.attributes.description).toEqual(expectedResponse[0].attributes.description);
       });
   }));
 
@@ -138,8 +154,10 @@ describe('Service: SpaceService', () => {
     });
 
     spaceService.update(updatedData)
-      .subscribe(data => {
-        expect(data).toEqual(updatedData);
+      .subscribe((data: Space) => {
+        expect(data.id).toEqual(updatedData.id);
+        expect(data.attributes.name).toEqual(updatedData.attributes.name);
+        expect(data.attributes.description).toEqual(updatedData.attributes.description);
       });
   }));
 
@@ -156,26 +174,30 @@ describe('Service: SpaceService', () => {
     let userName = "testuser";
 
     spaceService.getSpaceByName(userName,responseData[0].attributes.name)
-      .subscribe(data => {
-        expect(data).toEqual(expectedResponse[0]);
+      .subscribe((data: Space) => {
+        expect(data.id).toEqual(expectedResponse[0].id);
+        expect(data.attributes.name).toEqual(expectedResponse[0].attributes.name);
+        expect(data.attributes.description).toEqual(expectedResponse[0].attributes.description);
       });
   }));
 
   it('Search a space by name', async(() => {
-    let matchedData: Space = cloneDeep(responseData[0]);
+    let matchedData: Space[] = cloneDeep(responseData);
 
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify({data: matchedData}),
+          body: JSON.stringify(response),
           status: 200
         })
       ));
     });
 
     spaceService.search("test")
-      .subscribe(data => {
-        expect(data).toEqual(matchedData);
+      .subscribe((data: Space[]) => {
+        expect(data[0].id).toEqual(matchedData[0].id);
+        expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
+        expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
       });
   }));
 
