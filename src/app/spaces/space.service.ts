@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams } from '@angular/http';
 import { cloneDeep } from 'lodash';
 import { AuthenticationService, Logger, User, UserService } from 'ngx-login-client';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 import { WIT_API_URL } from '../api/wit-api';
 import { Space } from '../models/space';
@@ -20,10 +20,7 @@ export class SpaceService {
   private spaces: Space[] = [];
   // Map of space instances with key = spaceId, and
   // value = array index of space in spaces array instance.
-  private spaceIdIndexMap: { [spaceId:string] : number } = {};
-
-  // Map to store all user Ids
-  private userIdMap: { [userId:string] : User } = {};
+  private spaceIdIndexMap: { [spaceId: string]: number } = {};
 
   constructor(
     private http: Http,
@@ -58,16 +55,24 @@ export class SpaceService {
     let result = this.spaces.find(space => space.attributes.name === spaceName);
     if (result == null) {
       let url = `${this.namedSpacesUrl}/${userName}/${spaceName}`;
-      return this.http.get(url, { headers: this.headers } )
+      return this.http.get(url, { headers: this.headers })
         .map((response) => {
-          this.buildUserIdMap();
           let space: Space = response.json().data as Space;
-          this.resolveUsersForSpace(space);
           this.spaces.splice(this.spaces.length, 0, space);
           this.buildSpaceIndexMap();
           return space;
         })
-        .catch((error) => {return this.handleError(error)});
+        .switchMap(val => {
+          return this
+            .resolveOwner(val)
+            .map(owner => {
+              val.relationalData.creator = owner;
+              return val;
+            });
+        })
+        .catch((error) => {
+          return this.handleError(error);
+        });
     } else {
       return Observable.from([result]);
     }
@@ -77,7 +82,6 @@ export class SpaceService {
     return this.http
       .get(url, { headers: this.headers })
       .map(response => {
-        this.buildUserIdMap();
         // Extract links from JSON API response.
         // and set the nextLink, if server indicates more resources
         // in paginated collection through a 'next' link.
@@ -89,9 +93,6 @@ export class SpaceService {
         }
         // Extract data from JSON API response, and assert to an array of spaces.
         let newSpaces: Space[] = response.json().data as Space[];
-        newSpaces.forEach((newSpace) => {
-          this.resolveUsersForSpace(newSpace);
-        });
         let newItems = cloneDeep(newSpaces);
         // Update the existing spaces list with new data
         this.updateSpacesList(newItems);
@@ -101,7 +102,19 @@ export class SpaceService {
           return newSpaces;
         }
       })
-      .catch((error) => { return this.handleError(error)});
+      .switchMap(val => {
+        return Observable.forkJoin(
+          val.map(space =>
+            this.resolveOwner(space).map(owner => {
+              space.relationalData.creator = owner;
+              return space;
+            })
+          )
+        );
+      })
+      .catch((error) => {
+        return this.handleError(error);
+      });
   }
 
   create(space: Space): Observable<Space> {
@@ -110,58 +123,81 @@ export class SpaceService {
     return this.http
       .post(url, payload, { headers: this.headers })
       .map(response => {
-        this.buildUserIdMap();
         let newSpace: Space = response.json().data as Space;
-        this.resolveUsersForSpace(newSpace);
         // Add the newly created space at the top of the spaces list.
         this.spaces.splice(0, 0, newSpace);
         // Rebuild the map after updating the list
         this.buildSpaceIndexMap();
         return newSpace;
       })
-      .catch((error) => { return this.handleError(error)});
+      .switchMap(val => {
+        return this
+          .resolveOwner(val)
+          .map(owner => {
+            val.relationalData.creator = owner;
+            return val;
+          });
+      })
+      .catch((error) => {
+        return this.handleError(error);
+      });
   }
 
   update(space: Space): Observable<Space> {
     let url = `${this.spacesUrl}/${space.id}`;
-    let payload = JSON.stringify({data: space});
+    let payload = JSON.stringify({ data: space });
     return this.http
-      .patch(url, payload, {headers: this.headers})
+      .patch(url, payload, { headers: this.headers })
       .map(response => {
-        this.buildUserIdMap();
         let updatedSpace = response.json().data as Space;
-        this.resolveUsersForSpace(updatedSpace);
         // Find the index in the big list
-        let updateIndex = this.spaces.findIndex(item => item.id == updatedSpace.id);
+        let updateIndex = this.spaces.findIndex(item => item.id === updatedSpace.id);
         if (updateIndex > -1) {
           // Update space attributes
           this.spaces[updateIndex].attributes = updatedSpace.attributes;
         }
         return updatedSpace;
       })
-      .catch((error) => { return this.handleError(error)});
+      .switchMap(val => {
+        return this
+          .resolveOwner(val)
+          .map(owner => {
+            val.relationalData.creator = owner;
+            return val;
+          });
+      })
+      .catch((error) => {
+        return this.handleError(error);
+      });
   }
 
   search(searchText: string): Observable<Space[]> {
     let url = this.searchSpacesUrl;
     let params: URLSearchParams = new URLSearchParams();
-    if (searchText == '') {
+    if (searchText === '') {
       searchText = '*';
     }
-    params.set("q", searchText);
+    params.set('q', searchText);
 
     return this.http
-      .get(url, {search: params, headers: this.headers})
+      .get(url, { search: params, headers: this.headers })
       .map(response => {
-        this.buildUserIdMap();
         // Extract data from JSON API response, and assert to an array of spaces.
-        let newSpaces: Space[] = response.json().data as Space[];
-        newSpaces.forEach((newSpace) => {
-          this.resolveUsersForSpace(newSpace);
-        });
-        return newSpaces;
+        return response.json().data as Space[];
       })
-      .catch((error) => { return this.handleError(error)});
+      .switchMap(val => {
+        return Observable.forkJoin(
+          val.map(space =>
+            this.resolveOwner(space).map(owner => {
+              space.relationalData.creator = owner;
+              return space;
+            })
+          )
+        );
+      })
+      .catch((error) => {
+        return this.handleError(error);
+      });
   }
 
 
@@ -195,51 +231,25 @@ export class SpaceService {
     return Observable.throw(error.message || error);
   }
 
-  private resolveUsersForSpace(space: Space): void {
-    if (!space.hasOwnProperty('relationalData')) {
-      space.relationalData = {};
-    }
-    this.resolveOwner(space);
-  }
+  private resolveOwner(space: Space): Observable<User> {
+    space.relationalData = space.relationalData || {};
 
-  private resolveOwner(space: Space) {
-    if (!space.relationships.hasOwnProperty('owned-by') || !space.relationships['owned-by']) {
+    if (!space.relationships['owned-by'] || !space.relationships['owned-by'].data) {
       space.relationalData.creator = null;
       return;
     }
-    if (!space.relationships['owned-by'].hasOwnProperty('data')) {
-      space.relationalData.creator = null;
-      return;
-    }
-    if (!space.relationships['owned-by'].data) {
-      space.relationalData.creator = null;
-      return;
-    }
-    space.relationalData.creator = this.getUserById(space.relationships['owned-by'].data.id);
+    return this.getUserById(space.relationships['owned-by'].data.id);
   }
 
-  private getUserById(userId: string): User {
-    if (userId in this.userIdMap) {
-      return this.userIdMap[userId];
-    } else {
-      return null;
-    }
+  private getUserById(userId: string): Observable<User> {
+    return this.userService.getAllUsers().map(val => {
+      for (let u of val) {
+        if (userId === u.id) {
+          return u;
+        }
+      }
+      return {} as User;
+    });
   }
 
-  /**
-   * Usage: Build a ID-User map to dynamically access list of users
-   * This method takes the locally saved list of users from User Service
-   * The method assumes the users to have been fetched before hand using the UserService.
-   */
-  buildUserIdMap(): void {
-    // Fetch the current updated locally saved user list
-    let users: User[] = this.userService.getLocallySavedUsers() as User[];
-    // Check if the map is outdated or not and if yes then rebuild it
-    if (Object.keys(this.userIdMap).length < users.length) {
-      this.userIdMap = {};
-      users.forEach((user) => {
-        this.userIdMap[user.id] = user;
-      });
-    }
-  }
 }
