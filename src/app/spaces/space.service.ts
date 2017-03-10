@@ -61,7 +61,7 @@ export class SpaceService {
           this.buildSpaceIndexMap();
           return space;
         })
-        .catch(this.handleError);
+        .catch((error) => {return this.handleError(error)});
     } else {
       return Observable.from([result]);
     }
@@ -91,7 +91,7 @@ export class SpaceService {
           return newSpaces;
         }
       })
-      .catch(this.handleError);
+      .catch((error) => { return this.handleError(error)});
   }
 
   create(space: Space): Observable<Space> {
@@ -106,7 +106,8 @@ export class SpaceService {
         // Rebuild the map after updating the list
         this.buildSpaceIndexMap();
         return newSpace;
-      }).catch(this.handleError);
+      })
+      .catch((error) => { return this.handleError(error)});
   }
 
   update(space: Space): Observable<Space> {
@@ -124,7 +125,7 @@ export class SpaceService {
         }
         return updatedSpace;
       })
-      .catch(this.handleError);
+      .catch((error) => { return this.handleError(error)});
   }
 
   search(searchText: string): Observable<Space[]> {
@@ -142,7 +143,7 @@ export class SpaceService {
         let newSpaces: Space[] = response.json().data as Space[];
         return newSpaces;
       })
-      .catch(this.handleError);
+      .catch((error) => { return this.handleError(error)});
   }
 
 
