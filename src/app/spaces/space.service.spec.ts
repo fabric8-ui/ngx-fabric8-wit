@@ -4,7 +4,7 @@ import { MockBackend } from '@angular/http/testing';
 
 import { cloneDeep } from 'lodash';
 
-import {AuthenticationService, Logger, UserService, Broadcaster, AUTH_API_URL} from 'ngx-login-client';
+import { AuthenticationService, Logger, UserService, Broadcaster, AUTH_API_URL } from 'ngx-login-client';
 
 import { WIT_API_URL } from "../api/wit-api";
 import { Space } from '../models/space';
@@ -199,6 +199,25 @@ describe('Service: SpaceService', () => {
         expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
         expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
       });
+  }));
+
+  it('Get space by userName', async(() => {
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify(response),
+          status: 200
+        })
+      ));
+    });
+
+    let userName = 'testUser';
+
+    spaceService.getSpacesByUser(userName).subscribe((data: Space[]) => {
+      expect(data[0].id).toEqual(expectedResponse[0].id);
+      expect(data[0].attributes.name).toEqual(expectedResponse[0].attributes.name);
+      expect(data[0].attributes.description).toEqual(expectedResponse[0].attributes.description);
+    });
   }));
 
 });
