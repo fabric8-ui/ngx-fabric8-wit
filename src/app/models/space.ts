@@ -1,5 +1,6 @@
 import { Team } from './team';
 import { ProcessTemplate } from './process-template';
+import { User } from "ngx-login-client";
 
 export interface Space {
     name: string;
@@ -13,6 +14,7 @@ export interface Space {
     type: string;
     links: SpaceLink;
     relationships: SpaceRelationships;
+    relationalData?: RelationalData;
 }
 
 export class SpaceLink {
@@ -22,6 +24,12 @@ export class SpaceLink {
 export class SpaceRelationships {
     areas: SpaceRelatedLink;
     iterations: SpaceRelatedLink;
+    'owned-by': {
+      data: {
+        id: string;
+        type: string;
+      };
+    };
 }
 
 export class SpaceRelatedLink {
@@ -36,4 +44,8 @@ export class SpaceAttributes {
     'updated-at': string;
     'created-at': string;
     version: number;
+}
+
+export class RelationalData {
+  creator?: User;
 }
