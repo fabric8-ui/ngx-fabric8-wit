@@ -14,6 +14,7 @@ export class SpaceService {
   private spacesUrl: string;
   private namedSpacesUrl: string;
   private searchSpacesUrl: string;
+  private collabSpacesUrl: string;
   private nextLink: string = null;
 
   constructor(
@@ -28,6 +29,7 @@ export class SpaceService {
     this.spacesUrl = apiUrl + 'spaces';
     this.namedSpacesUrl = apiUrl + 'namedspaces';
     this.searchSpacesUrl = apiUrl + 'search/spaces';
+    this.collabSpacesUrl = apiUrl + 'collabspaces';
   }
 
   getSpaces(pageSize: number = 20): Observable<Space[]> {
@@ -136,6 +138,13 @@ export class SpaceService {
       .catch((error) => {
         return this.handleError(error);
       });
+  }
+
+  // Currently serves to fetch the list of all spaces owned by a user.
+  getSpacesByUser(userName: string): Observable<Space[]> {
+    let url = `${this.collabSpacesUrl}/${userName}`;
+    let isAll = false;
+    return this.getSpacesDelegate(url, isAll);
   }
 
   private handleError(error: any) {
