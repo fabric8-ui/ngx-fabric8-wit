@@ -159,23 +159,12 @@ export class SpaceService {
       space.relationalData.creator = null;
       return;
     }
-    return this
-      .getUserById(space.relationships['owned-by'].data.id)
+    return this.userService
+      .getUserByUserId(space.relationships['owned-by'].data.id)
       .map(owner => {
         space.relationalData.creator = owner;
         return space;
       });
-  }
-
-  private getUserById(userId: string): Observable<User> {
-    return this.userService.getAllUsers().map(val => {
-      for (let u of val) {
-        if (userId === u.id) {
-          return u;
-        }
-      }
-      return {} as User;
-    });
   }
 
 }
