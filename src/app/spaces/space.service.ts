@@ -147,6 +147,18 @@ export class SpaceService {
     return this.getSpacesDelegate(url, isAll);
   }
 
+  getSpaceById(spaceId: string): Observable<Space> {
+    let url = `${this.spacesUrl}/${spaceId}`;
+    return this.http.get(url, { headers: this.headers })
+      .map((response) => {
+        return response.json().data as Space;
+      })
+      .switchMap(val => this.resolveOwner(val))
+      .catch((error) => {
+        return this.handleError(error);
+      });
+  }
+
   private handleError(error: any) {
     this.logger.error(error);
     return Observable.throw(error.message || error);
