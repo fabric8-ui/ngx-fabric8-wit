@@ -201,7 +201,7 @@ describe('Service: SpaceService', () => {
       });
   }));
 
-  it('Get space by userName', async(() => {
+  it('Get spaces by userName', async(() => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
@@ -218,6 +218,26 @@ describe('Service: SpaceService', () => {
       expect(data[0].attributes.name).toEqual(expectedResponse[0].attributes.name);
       expect(data[0].attributes.description).toEqual(expectedResponse[0].attributes.description);
     });
+  }));
+
+  it('Get a single space by Id', async(() => {
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify({data: responseData[0]}),
+          status: 200
+        })
+      ));
+    });
+
+    let spaceId = '1';
+
+    spaceService.getSpaceById(spaceId)
+      .subscribe((data: Space) => {
+        expect(data.id).toEqual(expectedResponse[0].id);
+        expect(data.attributes.name).toEqual(expectedResponse[0].attributes.name);
+        expect(data.attributes.description).toEqual(expectedResponse[0].attributes.description);
+      });
   }));
 
 });
