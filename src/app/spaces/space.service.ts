@@ -14,7 +14,6 @@ export class SpaceService {
   private spacesUrl: string;
   private namedSpacesUrl: string;
   private searchSpacesUrl: string;
-  private collabSpacesUrl: string;
   private nextLink: string = null;
 
   constructor(
@@ -29,7 +28,6 @@ export class SpaceService {
     this.spacesUrl = apiUrl + 'spaces';
     this.namedSpacesUrl = apiUrl + 'namedspaces';
     this.searchSpacesUrl = apiUrl + 'search/spaces';
-    this.collabSpacesUrl = apiUrl + 'collabspaces';
   }
 
   getSpaces(pageSize: number = 20): Observable<Space[]> {
@@ -142,9 +140,22 @@ export class SpaceService {
 
   // Currently serves to fetch the list of all spaces owned by a user.
   getSpacesByUser(userName: string): Observable<Space[]> {
-    let url = `${this.collabSpacesUrl}/${userName}`;
-    let isAll = false;
-    return this.getSpacesDelegate(url, isAll);
+    // TODO HACK
+    return this.userService
+      .getUser()
+      .switchMap(user => this
+        // All your spaces are belong to us
+        .getSpaces(1000000)
+        // Map this to only the spaces that we own
+        .map(spaces => {
+          let res: Space[] = [];
+          for (let space of spaces) {
+            if (space.relationalData.creator.id === user.id) {
+              res.push(space);
+            }
+          }
+          return res;
+        }));
   }
 
   getSpaceById(spaceId: string): Observable<Space> {
