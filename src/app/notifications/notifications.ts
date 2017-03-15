@@ -4,7 +4,11 @@ import { Observable } from 'rxjs';
 export class Notifications {
 
   message(notification: Notification): Observable<NotificationAction> {
-    throw new Error('Unimplemented');
+    throw new Error('Not yet implemented');
+  }
+
+  recent(): Observable<Notification> {
+    throw new Error('Not yet implemented');
   }
 
 }
