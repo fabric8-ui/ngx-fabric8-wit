@@ -7,7 +7,7 @@ export class Notifications {
     throw new Error('Not yet implemented');
   }
 
-  recent(): Observable<Notification> {
+  recent(): Observable<Notification[]> {
     throw new Error('Not yet implemented');
   }
 
