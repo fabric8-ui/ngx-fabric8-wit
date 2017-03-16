@@ -57,13 +57,31 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
       .takeUntil(changed$)
       .map(value => {
         if (!control.value || control.value.toString().length > ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH) {
-          return { maxLength: { valid: false, requestedName: control.value } };
+          return {
+            maxLength: {
+              valid: false,
+              requestedName: control.value,
+              max: ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH,
+            }
+          };
         }
         let strVal: string = control.value.toString();
         if (strVal.length < ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH) {
-          return { minLength: { valid: false, requestedName: control.value } };
+          return {
+            minLength: {
+              valid: false,
+              requestedName: control.value,
+              min: ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH
+            }
+          };
         } else if (!strVal.match(ValidSpaceNameValidatorDirective.ALLOWED_SPACE_NAMES)) {
-          return { invalid: { valid: false, requestedName: control.value } };
+          return {
+            invalid: {
+              valid: false,
+              requestedName: control.value,
+              allowedChars: ValidSpaceNameValidatorDirective.ALLOWED_SPACE_NAMES
+            }
+          };
         }
         return null;
       })
