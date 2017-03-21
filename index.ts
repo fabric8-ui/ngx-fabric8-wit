@@ -22,9 +22,3 @@ export { SpaceService } from './src/app/spaces/space.service';
 export { Spaces } from './src/app/spaces/spaces';
 export { UniqueSpaceNameValidatorDirective} from './src/app/spaces/unique-space-name.directive';
 export { ValidSpaceNameValidatorDirective } from './src/app/spaces/valid-space-name.directive';
-
-// Notifications
-export { Notification } from './src/app/notifications/notification';
-export { NotificationAction } from './src/app/notifications/notification-action';
-export { Notifications } from './src/app/notifications/notifications';
-export { NotificationType } from './src/app/notifications/notification-type';

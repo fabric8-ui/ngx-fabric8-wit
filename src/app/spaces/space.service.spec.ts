@@ -4,7 +4,8 @@ import { MockBackend } from '@angular/http/testing';
 
 import { cloneDeep } from 'lodash';
 
-import { AuthenticationService, Logger, UserService, Broadcaster, AUTH_API_URL } from 'ngx-login-client';
+import { AuthenticationService, UserService, AUTH_API_URL } from 'ngx-login-client';
+import { Broadcaster, Logger } from 'ngx-base';
 
 import { WIT_API_URL } from "../api/wit-api";
 import { Space } from '../models/space';

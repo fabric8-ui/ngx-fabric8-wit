@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams } from '@angular/http';
 import { cloneDeep } from 'lodash';
-import { AuthenticationService, Logger, User, UserService } from 'ngx-login-client';
+import { AuthenticationService, User, UserService } from 'ngx-login-client';
+import { Logger } from 'ngx-base';
 import { Observable } from 'rxjs';
 
 import { WIT_API_URL } from '../api/wit-api';
