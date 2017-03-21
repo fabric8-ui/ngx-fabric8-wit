@@ -140,10 +140,18 @@ export class SpaceService {
   }
 
   // Currently serves to fetch the list of all spaces owned by a user.
-  getSpacesByUser(userName: string): Observable<Space[]> {
-    let url = `${this.namedSpacesUrl}/${userName}`;
+  getSpacesByUser(userName: string, pageSize: number = 20): Observable<Space[]> {
+    let url = `${this.namedSpacesUrl}/${userName}` + '?page[limit]=' + pageSize;
     let isAll = false;
     return this.getSpacesDelegate(url, isAll);
+  }
+
+  getMoreSpacesByUser(): Observable<Space[]> {
+    if (this.nextLink) {
+      return this.getSpacesDelegate(this.nextLink, false);
+    } else {
+      return Observable.throw('No more spaces found');
+    }
   }
 
   getSpaceById(spaceId: string): Observable<Space> {
