@@ -22,6 +22,7 @@
       "@angular/core": ["node_modules/@angular/core"],
       "@angular/http": ["node_modules/@angular/http"],
       "@angular/router": ["node_modules/@angular/router"],
+      "ngx-base": ["node_modules/ngx-base"],
       "ngx-login-client": ["node_modules/ngx-login-client"],
       "rxjs/*": ["node_modules/rxjs/*"]
     },
