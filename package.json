@@ -75,7 +75,7 @@
     "@angular/http": "2.4.9",
     "lodash": "4.17.4",
     "ngx-base": "1.2.3",
-    "ngx-login-client": "0.6.8"
+    "ngx-login-client": "0.6.11"
   },
   "peerDependencies": {},
   "devDependencies": {
