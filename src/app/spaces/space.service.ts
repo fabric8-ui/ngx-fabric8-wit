@@ -73,10 +73,8 @@ export class SpaceService {
         let newSpaces: Space[] = response.json().data as Space[];
         return newSpaces;
       })
-      .switchMap(val => {
-        return Observable.forkJoin(
-          val.map(space => this.resolveOwner(space))
-        );
+      .switchMap(spaces => {
+        return this.resolveOwners(spaces);
       })
       .catch((error) => {
         return this.handleError(error);
@@ -129,10 +127,8 @@ export class SpaceService {
         // Extract data from JSON API response, and assert to an array of spaces.
         return response.json().data as Space[];
       })
-      .switchMap(val => {
-        return Observable.forkJoin(
-          val.map(space => this.resolveOwner(space))
-        );
+      .switchMap(spaces => {
+        return this.resolveOwners(spaces);
       })
       .catch((error) => {
         return this.handleError(error);
@@ -183,6 +179,29 @@ export class SpaceService {
       .map(owner => {
         space.relationalData.creator = owner;
         return space;
+      });
+  }
+
+  private resolveOwners(spaces: Space[]): Observable<Space[]> {
+    return Observable
+      // Get a stream of spaces
+      .from(spaces)
+      // Map to a stream of owner Ids of these spaces
+      .map(space => space.relationships['owned-by'].data.id)
+      // Get only the unique owners in this stream of owner Ids
+      .distinct()
+      // Get the users from the server based on the owner Ids
+      // and flatten the resulting stream , observables are returned
+      .flatMap(ownerId => this.userService.getUserByUserId(ownerId))
+      // map the user objects back to the spaces to return a stream of spaces
+      .map(owner => {
+        for(let space of spaces) {
+          space.relationalData = space.relationalData || {};
+          if(owner.id === space.relationships['owned-by'].data.id) {
+            space.relationalData.creator = owner;
+          }
+        }
+        return spaces;
       });
   }
 
