@@ -74,8 +74,8 @@
     "@angular/forms": "4.0.1",
     "@angular/http": "4.0.1",
     "lodash": "4.17.4",
-    "ngx-base": "1.2.8",
-    "ngx-login-client": "0.6.19"
+    "ngx-base": "1.2.9",
+    "ngx-login-client": "0.6.20"
   },
   "peerDependencies": {},
   "devDependencies": {
