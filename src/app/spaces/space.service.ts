@@ -195,9 +195,9 @@ export class SpaceService {
       .flatMap(ownerId => this.userService.getUserByUserId(ownerId))
       // map the user objects back to the spaces to return a stream of spaces
       .map(owner => {
-        for(let space of spaces) {
+        for (let space of spaces) {
           space.relationalData = space.relationalData || {};
-          if(owner.id === space.relationships['owned-by'].data.id) {
+          if (owner.id === space.relationships['owned-by'].data.id) {
             space.relationalData.creator = owner;
           }
         }
