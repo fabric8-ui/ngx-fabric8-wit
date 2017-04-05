@@ -192,13 +192,18 @@ export class SpaceService {
       .distinct()
       // Get the users from the server based on the owner Ids
       // and flatten the resulting stream , observables are returned
-      .flatMap(ownerId => this.userService.getUserByUserId(ownerId))
+      .flatMap(ownerId => this.userService.getUserByUserId(ownerId).catch(err => {
+        console.log('Error fetching user', ownerId, err);
+        return Observable.empty<User>();
+      }))
       // map the user objects back to the spaces to return a stream of spaces
       .map(owner => {
-        for (let space of spaces) {
-          space.relationalData = space.relationalData || {};
-          if (owner.id === space.relationships['owned-by'].data.id) {
-            space.relationalData.creator = owner;
+        if (owner) {
+          for (let space of spaces) {
+            space.relationalData = space.relationalData || {};
+            if (owner.id === space.relationships['owned-by'].data.id) {
+              space.relationalData.creator = owner;
+            }
           }
         }
         return spaces;
