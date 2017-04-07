@@ -22,3 +22,10 @@ export { SpaceService } from './src/app/spaces/space.service';
 export { Spaces } from './src/app/spaces/spaces';
 export { UniqueSpaceNameValidatorDirective} from './src/app/spaces/unique-space-name.directive';
 export { ValidSpaceNameValidatorDirective } from './src/app/spaces/valid-space-name.directive';
+
+// Areas
+export {
+  Area,
+  AreaAttributes
+} from './src/app/models/area';
+export { AreaService } from './src/app/areas/area.service';
