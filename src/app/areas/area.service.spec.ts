@@ -70,8 +70,12 @@ describe('Service: AreaService', () => {
         'name': 'TestArea',
         'created-at': null,
         'updated-at': null,
-        'version': 0
+        'version': 0,
+        'parent_path': '/',
+        'parent_path_resolved': '/'
       },
+      'links': null,
+      'relationships': null,
       'id': '1',
       'type': 'areas',
     }
