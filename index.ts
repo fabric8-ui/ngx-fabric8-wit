@@ -26,6 +26,14 @@ export { ValidSpaceNameValidatorDirective } from './src/app/spaces/valid-space-n
 // Areas
 export {
   Area,
-  AreaAttributes
+  AreaAttributes,
+  AreaRelations
 } from './src/app/models/area';
 export { AreaService } from './src/app/areas/area.service';
+
+// Generic classes
+export {
+  GenericLinks,
+  GenericData,
+  RelationGeneric
+} from './src/app/models/generic';

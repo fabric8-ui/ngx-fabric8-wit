@@ -14,7 +14,6 @@ export class AreaService {
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private spacesUrl: string;
   private areasUrl: string;
-  private nextLink: string = null;
 
   constructor(
     private http: Http,
