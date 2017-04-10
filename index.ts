@@ -1,3 +1,4 @@
+export { Fabric8WitModule } from './fabric8-wit.module';
 // Contexts
 export { ContextType } from './src/app/contexts/context-type';
 export { Context } from './src/app/contexts/context';
@@ -22,6 +23,7 @@ export { SpaceService } from './src/app/spaces/space.service';
 export { Spaces } from './src/app/spaces/spaces';
 export { UniqueSpaceNameValidatorDirective} from './src/app/spaces/unique-space-name.directive';
 export { ValidSpaceNameValidatorDirective } from './src/app/spaces/valid-space-name.directive';
+export { SpaceNamePipe } from './src/app/spaces/space-name.pipe';
 
 // Areas
 export {

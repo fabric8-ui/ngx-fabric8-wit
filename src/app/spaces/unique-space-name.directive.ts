@@ -58,7 +58,7 @@ export function uniqueSpaceNameValidator(
       .switchMap(value => userService.loggedInUser
         .switchMap(user => {
           return spaceService
-            .getSpaceByName(user.attributes.username, control.value)
+            .getSpaceByName(user.attributes.username, control.value ? control.value.replace(' ', '_') : control.value)
             .map(val => {
               return { unique: { valid: false, existingSpace: val, requestedName: control.value } };
             })
