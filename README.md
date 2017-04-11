@@ -20,7 +20,7 @@ This library does not run on it's own. It must be imported.
 
 There are several services and a couple of models used by them available.
 
-    Space Service
+    SpaceService
   
 You must provide the URL to API to do the login. To do this, you must provide 
 a `string` with an OpaqueToken `WIT_API_URL` from `ngx-fabric8-wit`. We suggest using a
