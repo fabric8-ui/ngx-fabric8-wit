@@ -19,6 +19,9 @@ export interface Space {
 
 export class SpaceLink {
     self: string;
+    filters?: string;
+    workitemlinktypes?: string;
+    workitemtypes?: string;
 }
 
 export class SpaceRelationships {
