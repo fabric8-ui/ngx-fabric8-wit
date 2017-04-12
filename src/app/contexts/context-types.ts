@@ -6,14 +6,14 @@ export class ContextTypes {
       'user',
       {
         name: 'User',
-        icon: 'fa fa-user',
+        icon: 'pficon pficon-user',
       } as ContextType
     ],
     [
       'space',
       {
         name: 'Space',
-        icon: 'fa fa-space-shuttle',
+        icon: 'fa fa-th-large',
       } as ContextType
     ],
     [
