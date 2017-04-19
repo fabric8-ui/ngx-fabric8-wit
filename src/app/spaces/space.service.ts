@@ -113,6 +113,21 @@ export class SpaceService {
       });
   }
 
+  deleteSpace(space: Space): Observable<Space> {
+    let url = `${this.spacesUrl}/${space.id}`;
+    return this.http
+      .delete(url, { headers: this.headers })
+      .map(response => {
+        return response.json().data as Space;
+      })
+      .switchMap(val => {
+        return this.resolveOwner(val);
+      })
+      .catch((error) => {
+        return this.handleError(error);
+      });
+  }
+
   search(searchText: string): Observable<Space[]> {
     let url = this.searchSpacesUrl;
     let params: URLSearchParams = new URLSearchParams();
