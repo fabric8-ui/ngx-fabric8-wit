@@ -117,12 +117,7 @@ export class SpaceService {
     let url = `${this.spacesUrl}/${space.id}`;
     return this.http
       .delete(url, { headers: this.headers })
-      .map(response => {
-        return response.json().data as Space;
-      })
-      .switchMap(val => {
-        return this.resolveOwner(val);
-      })
+      .map( () => {})
       .catch((error) => {
         return this.handleError(error);
       });
