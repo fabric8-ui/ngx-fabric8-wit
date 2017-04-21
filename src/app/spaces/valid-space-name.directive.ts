@@ -17,7 +17,7 @@ import {
 })
 export class ValidSpaceNameValidatorDirective implements Validator, OnChanges {
 
-  static readonly ALLOWED_SPACE_NAMES = /^[a-z\d][a-z\d\s-]*[a-z\d]$/i;
+  static readonly ALLOWED_SPACE_NAMES = /^[a-z\d][a-z\d\s-_]*[a-z\d]$/i;
   static readonly MIN_SPACE_NAME_LENGTH = 4;
   static readonly MAX_SPACE_NAME_LENGTH = 63;
 
