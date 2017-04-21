@@ -7,15 +7,15 @@ import { By } from '@angular/platform-browser';
 @Component({
   template: `
     <form>
-      <input name="email" [ngModel]="email" validSpaceName />
+      <input name="spaceName" [ngModel]="spaceName" validSpaceName />
     </form>
   `
 })
 class TestSpaceNameComponent {
-  email: string;
+  spaceName: string;
 }
 
-describe('Directive for Name Space - ', () => {
+describe('Directive for Name Space', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,7 +24,7 @@ describe('Directive for Name Space - ', () => {
     });
   });
 
-  it('should validate false when name starts with unsupported characters', async(() => {
+  it('Validate false when name starts with unsupported characters', async(() => {
     // given
     let fixture = TestBed.createComponent(TestSpaceNameComponent);
     let comp = fixture.componentInstance;
@@ -41,7 +41,7 @@ describe('Directive for Name Space - ', () => {
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         let form: NgForm = debug.children[0].injector.get(NgForm);
-        let control = form.control.get('email');
+        let control = form.control.get('spaceName');
         // then
         expect(control.hasError('invalid')).toBe(true);
         expect(control.errors.invalid.valid).toBeFalsy();
@@ -49,7 +49,7 @@ describe('Directive for Name Space - ', () => {
    });
   }));
 
-  it('should validate true when underscore in the middle', async(() => {
+  it('Validate true when underscore in the middle', async(() => {
     // given
     let fixture = TestBed.createComponent(TestSpaceNameComponent);
     let comp = fixture.componentInstance;
@@ -66,7 +66,7 @@ describe('Directive for Name Space - ', () => {
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         let form: NgForm = debug.children[0].injector.get(NgForm);
-        let control = form.control.get('email');
+        let control = form.control.get('spaceName');
         // then
         expect(control.errors).toBeNull();
       });
