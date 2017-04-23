@@ -27,6 +27,7 @@ export class SpaceLink {
 export class SpaceRelationships {
     areas: SpaceRelatedLink;
     iterations: SpaceRelatedLink;
+    collaborators: SpaceRelatedLink;
     'owned-by': {
       data: {
         id: string;
