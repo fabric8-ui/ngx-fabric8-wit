@@ -33,6 +33,9 @@ export {
 } from './src/app/models/area';
 export { AreaService } from './src/app/areas/area.service';
 
+// Collaborators
+export { CollaboratorService } from './src/app/collaborators/collaborator.service';
+
 // Generic classes
 export {
   GenericLinks,
