@@ -1,6 +1,6 @@
 import { async, inject, TestBed } from '@angular/core/testing';
-import { BaseRequestOptions, Http, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { BaseRequestOptions, Http, Response, ResponseType, ResponseOptions } from '@angular/http';
+import { MockBackend, MockConnection} from '@angular/http/testing';
 
 import { cloneDeep } from 'lodash';
 
@@ -15,6 +15,7 @@ describe('Service: CollaboratorService', () => {
   let collaboratorService: CollaboratorService;
   let mockService: MockBackend;
   let fakeAuthService: any;
+  let mockLog: any;
 
   beforeEach(() => {
     fakeAuthService = {
@@ -25,9 +26,12 @@ describe('Service: CollaboratorService', () => {
         return true;
       }
     };
+    mockLog = jasmine.createSpyObj('Logger', ['error']);
     TestBed.configureTestingModule({
       providers: [
-        Logger,
+        {
+          provide: Logger, useValue: mockLog
+        },
         BaseRequestOptions,
         MockBackend,
         {
@@ -83,8 +87,8 @@ describe('Service: CollaboratorService', () => {
   let response = { data: responseData, links: {} };
   let expectedResponse = cloneDeep(responseData);
 
-
   it('Get collaborators', async(() => {
+    // given
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
@@ -93,14 +97,28 @@ describe('Service: CollaboratorService', () => {
         })
       ));
     });
-
+    // when
     collaboratorService.getAllBySpaceId('1').subscribe((data: User[]) => {
+      // then
       expect(data[0].id).toEqual(expectedResponse[0].id);
       expect(data[0].attributes.username).toEqual(expectedResponse[0].attributes.username);
     });
   }));
 
+  it('Get collaborators in error', async(() => {
+    // given
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockError(new Error('some error'));
+    });
+    // when
+    collaboratorService.getAllBySpaceId('1').subscribe((data: User[]) => {
+      fail('get collaboration should be in error');
+    }, // then
+    error => expect(error).toEqual('some error'));
+  }));
+
   it('Add new collaborators', async(() => {
+    // given
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
@@ -109,10 +127,57 @@ describe('Service: CollaboratorService', () => {
         })
       ));
     });
-
+    // when
     collaboratorService.addCollaborators('1', responseData)
       .subscribe(() => {
+        // then
         expect('1').toEqual('1');
       });
+  }));
+
+  it('Add new collaborators in error', async(() => {
+    // given
+    mockLog.error.and.returnValue();
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockError(new Error('some error'));
+    });
+    // when
+    collaboratorService.addCollaborators('1', responseData)
+      .subscribe(() => {
+        fail('add collaboration should be in error');
+      }, // then
+      error => expect(error).toEqual('some error'));
+  }));
+
+  it('Remove collaborator', async(() => {
+    // given
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify({data: ['id1']}),
+          status: 201
+        })
+      ));
+    });
+    // when
+    collaboratorService.removeCollaborator('1', '6abd2970-9407-469d-a8ad-9e18706d732c')
+      .subscribe(() => {
+        // then
+        expect('1').toEqual('1');
+      });
+  }));
+
+  it('Remove collaborator in error', async(() => {
+    // given
+    mockLog.error.and.returnValue();
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockError(new Error('some error'));
+    });
+    // when
+    collaboratorService.removeCollaborator('1', '6abd2970-9407-469d-a8ad-9e18706d732c')
+      .subscribe(() => {
+        fail('remove collaboration should be in error');
+      }, // then
+      error => expect(error).toEqual('some error'));
   }));
 });

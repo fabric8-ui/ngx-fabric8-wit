@@ -16,8 +16,10 @@ describe('Service: AreaService', () => {
   let areaService: AreaService;
   let mockService: MockBackend;
   let fakeAuthService: any;
+  let mockLog: any;
 
   beforeEach(() => {
+    mockLog = jasmine.createSpyObj('Logger', ['error']);
     fakeAuthService = {
       getToken: function () {
         return '';
@@ -28,7 +30,9 @@ describe('Service: AreaService', () => {
     };
     TestBed.configureTestingModule({
       providers: [
-        Logger,
+        {
+          provide: Logger, useValue: mockLog
+        },
         BaseRequestOptions,
         MockBackend,
         {
@@ -83,8 +87,8 @@ describe('Service: AreaService', () => {
   let response = { data: responseData, links: {} };
   let expectedResponse = cloneDeep(responseData);
 
-
   it('Get areas', async(() => {
+    // given
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
@@ -93,14 +97,28 @@ describe('Service: AreaService', () => {
         })
       ));
     });
-
+    // when
     areaService.getAllBySpaceId('1').subscribe((data: Area[]) => {
+      // then
       expect(data[0].id).toEqual(expectedResponse[0].id);
       expect(data[0].attributes.name).toEqual(expectedResponse[0].attributes.name);
     });
   }));
 
+  it('Get areas in error', async(() => {
+    // given
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockError(new Error('some error'));
+    });
+    // when
+    areaService.getAllBySpaceId('1').subscribe((data: Area[]) => {
+      fail('Get areas should be in error');
+    }, // then
+    error => expect(error).toEqual('some error'));
+  }));
+
   it('Add new area', async(() => {
+    // given
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
@@ -109,15 +127,30 @@ describe('Service: AreaService', () => {
         })
       ));
     });
-
+    // when
     areaService.create('1', responseData[0])
       .subscribe((data: Area) => {
+        // then
         expect(data.id).toEqual(expectedResponse[0].id);
         expect(data.attributes.name).toEqual(expectedResponse[0].attributes.name);
       });
   }));
 
+  it('Add new area in error', async(() => {
+    // given
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockError(new Error('some error'));
+    });
+    // when
+    areaService.create('1', responseData[0])
+      .subscribe((data: Area) => {
+        fail('Add new area should be in error');
+      }, // then
+    error => expect(error).toEqual('some error'));
+  }));
+
   it('Get a single area by Id', async(() => {
+    // given
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
@@ -126,14 +159,27 @@ describe('Service: AreaService', () => {
         })
       ));
     });
-
     let areaId = '1';
-
+    // when
     areaService.getById(areaId)
       .subscribe((data: Area) => {
+        // then
         expect(data.id).toEqual(expectedResponse[0].id);
         expect(data.attributes.name).toEqual(expectedResponse[0].attributes.name);
       });
   }));
 
+  it('Get a single area by Id in error', async(() => {
+    // given
+    mockService.connections.subscribe((connection: any) => {
+      connection.mockError(new Error('some error'));
+    });
+    let areaId = '1';
+    // when
+    areaService.getById(areaId)
+      .subscribe((data: Area) => {
+        fail('Get a single area by Id should be in error');
+      }, // then
+      error => expect(error).toEqual('some error'));
+  }));
 });

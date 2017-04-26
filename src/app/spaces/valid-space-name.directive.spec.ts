@@ -73,4 +73,56 @@ describe('Directive for Name Space', () => {
    });
   }));
 
+  it('Validate false when there is not enough characters', async(() => {
+    // given
+    let fixture = TestBed.createComponent(TestSpaceNameComponent);
+    let comp = fixture.componentInstance;
+    let debug = fixture.debugElement;
+    let input = debug.query(By.css('input'));
+    input.nativeElement.value = 'start';
+    input.nativeElement.dispatchEvent( new Event('input'));
+    fixture.detectChanges();
+
+   fixture.whenStable().then(() => {
+     // when
+      input.nativeElement.value = 'sta';
+      input.nativeElement.dispatchEvent( new Event('input'));
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        let form: NgForm = debug.children[0].injector.get(NgForm);
+        let control = form.control.get('spaceName');
+        // then
+        expect(control.hasError('minLength')).toBe(true);
+        expect(control.errors.minLength.valid).toBeFalsy();
+      });
+   });
+  }));
+
+    it('Validate false when there is too many characters', async(() => {
+    // given
+    let fixture = TestBed.createComponent(TestSpaceNameComponent);
+    let comp = fixture.componentInstance;
+    let debug = fixture.debugElement;
+    let input = debug.query(By.css('input'));
+    input.nativeElement.value = 'start';
+    input.nativeElement.dispatchEvent( new Event('input'));
+    fixture.detectChanges();
+
+   fixture.whenStable().then(() => {
+     // when
+      input.nativeElement.value = 's1234567890123456789012345678901234567890123456789012345678901234567890';
+      input.nativeElement.dispatchEvent( new Event('input'));
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        let form: NgForm = debug.children[0].injector.get(NgForm);
+        let control = form.control.get('spaceName');
+        // then
+        expect(control.hasError('maxLength')).toBe(true);
+        expect(control.errors.maxLength.valid).toBeFalsy();
+      });
+   });
+  }));
+
 });
+
+
