@@ -98,7 +98,7 @@ describe('Service: CollaboratorService', () => {
       ));
     });
     // when
-    collaboratorService.getAllBySpaceId('1').subscribe((data: User[]) => {
+    collaboratorService.getInitialBySpaceId('1').subscribe((data: User[]) => {
       // then
       expect(data[0].id).toEqual(expectedResponse[0].id);
       expect(data[0].attributes.username).toEqual(expectedResponse[0].attributes.username);
@@ -111,7 +111,7 @@ describe('Service: CollaboratorService', () => {
       connection.mockError(new Error('some error'));
     });
     // when
-    collaboratorService.getAllBySpaceId('1').subscribe((data: User[]) => {
+    collaboratorService.getInitialBySpaceId('1').subscribe((data: User[]) => {
       fail('get collaboration should be in error');
     }, // then
     error => expect(error).toEqual('some error'));

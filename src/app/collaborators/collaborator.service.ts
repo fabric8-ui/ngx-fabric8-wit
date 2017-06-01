@@ -12,6 +12,7 @@ export class CollaboratorService {
 
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private spacesUrl: string;
+  private nextLink: string;
 
   constructor(
     private http: Http,
@@ -24,17 +25,48 @@ export class CollaboratorService {
     this.spacesUrl = apiUrl + 'spaces';
   }
 
-  getAllBySpaceId(spaceId: string): Observable<User[]> {
-    let url = this.spacesUrl + '/' + spaceId + '/collaborators';
+  getInitialBySpaceId(spaceId: string, pageSize: number = 20): Observable<User[]> {
+    let url = this.spacesUrl + '/' + spaceId + '/collaborators' + '?page[limit]=' + pageSize;
     return this.http
       .get(url, { headers: this.headers })
       .map(response => {
+
+        let links = response.json().links;
+        if (links.hasOwnProperty('next')) {
+          this.nextLink = links.next;
+        } else {
+          this.nextLink = null;
+        }
+
         let collaborators: User[] = response.json().data as User[];
         return collaborators;
       })
       .catch((error) => {
         return this.handleError(error);
       });
+  }
+
+  getNextCollaborators(): Observable<User[]> {
+    if (this.nextLink) {
+      return this.http
+        .get(this.nextLink, { headers: this.headers })
+        .map(response => {
+          let links = response.json().links;
+          if (links.hasOwnProperty('next')) {
+            this.nextLink = links.next;
+          } else {
+            this.nextLink = null;
+          }
+
+          let collaborators: User[] = response.json().data as User[];
+          return collaborators;
+        })
+        .catch((error) => {
+          return this.handleError(error);
+        });
+    } else {
+      return Observable.throw('No more collaborators found');
+    }
   }
 
   addCollaborators(spaceId: string, users: User[]): Observable<Response> {
