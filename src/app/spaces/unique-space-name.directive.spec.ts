@@ -55,9 +55,13 @@ describe('Directive for Name Space', () => {
             related: 'http://example.com/api/spaces/1/iterations'
           }
         },
-        collaborators: {
+        'space-template': {
+          data: {
+            id: '',
+            type: 'spacetemplates'
+          },
           links: {
-            related: 'http://example.com/api/spaces/1/iterations'
+            related: 'http://roro.com'
           }
         },
         'owned-by': {

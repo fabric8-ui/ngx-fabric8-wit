@@ -97,9 +97,13 @@ describe('Service: SpaceService', () => {
             related: 'http://example.com/api/spaces/1/iterations'
           }
         },
-        collaborators: {
+        'space-template': {
+          data: {
+            id: '',
+            type: 'spacetemplates'
+          },
           links: {
-            related: 'http://example.com/api/spaces/1/iterations'
+            related: 'http://roro.com'
           }
         },
         'owned-by': {
@@ -139,7 +143,7 @@ describe('Service: SpaceService', () => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify({data: responseData[0]}),
+          body: JSON.stringify({ data: responseData[0] }),
           status: 201
         })
       ));
@@ -175,7 +179,7 @@ describe('Service: SpaceService', () => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify({data: updatedData}),
+          body: JSON.stringify({ data: updatedData }),
           status: 200
         })
       ));
@@ -210,14 +214,14 @@ describe('Service: SpaceService', () => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify({data: responseData[0]}),
+          body: JSON.stringify({ data: responseData[0] }),
           status: 200
         })
       ));
     });
     let userName = "testuser";
     // when
-    spaceService.getSpaceByName(userName,responseData[0].attributes.name)
+    spaceService.getSpaceByName(userName, responseData[0].attributes.name)
       .subscribe((data: Space) => {
         // then
         expect(data.id).toEqual(expectedResponse[0].id);
@@ -234,7 +238,7 @@ describe('Service: SpaceService', () => {
     });
     let userName = "testuser";
     // when
-    spaceService.getSpaceByName(userName,responseData[0].attributes.name)
+    spaceService.getSpaceByName(userName, responseData[0].attributes.name)
       .subscribe((data: Space) => {
         fail('Get a single space should be in error');
       }, // then
@@ -307,7 +311,7 @@ describe('Service: SpaceService', () => {
     spaceService.getSpacesByUser(userName).subscribe((data: Space[]) => {
       fail('Get spaces by userName should be in error');
     }, // then
-    error => expect(error).toEqual('some error'));
+      error => expect(error).toEqual('some error'));
   }));
 
   it('Get a single space by Id', async(() => {
@@ -315,7 +319,7 @@ describe('Service: SpaceService', () => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify({data: responseData[0]}),
+          body: JSON.stringify({ data: responseData[0] }),
           status: 200
         })
       ));
@@ -342,7 +346,7 @@ describe('Service: SpaceService', () => {
       .subscribe((data: Space) => {
         fail('Get a single space by Id should be in error');
       }, // then
-    error => expect(error).toEqual('some error'));
+      error => expect(error).toEqual('some error'));
   }));
 
 });

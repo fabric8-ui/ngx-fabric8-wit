@@ -1,11 +1,9 @@
 import { Team } from './team';
-import { ProcessTemplate } from './process-template';
 import { User } from "ngx-login-client";
 
 export interface Space {
     name: string;
     path: String;
-    process?: ProcessTemplate;
     privateSpace?: boolean;
     teams: Team[];
     defaultTeam: Team;
@@ -27,8 +25,8 @@ export class SpaceLink {
 export class SpaceRelationships {
     areas: SpaceRelatedLink;
     iterations: SpaceRelatedLink;
-    // this change breaks in fabric8-ui, fix it there to include this. 
-    //collaborators: SpaceRelatedLink;
+    // collaborators: SpaceRelatedLink;
+    'space-template': SpaceTemplateRelation;
     'owned-by': {
       data: {
         id: string;
@@ -37,6 +35,17 @@ export class SpaceRelationships {
     };
 }
 
+export class SpaceTemplateRelationData {
+    id: string;
+    type: string;
+}
+
+export class SpaceTemplateRelation {
+    data: SpaceTemplateRelationData;
+    links: {
+        related: string
+    };
+}
 export class SpaceRelatedLink {
     links: {
         related: string
