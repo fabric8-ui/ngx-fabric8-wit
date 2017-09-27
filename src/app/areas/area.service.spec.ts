@@ -54,7 +54,10 @@ describe('Service: AreaService', () => {
           provide: AUTH_API_URL,
           useValue: 'http://example.com/auth'
         },
-        UserService,
+        {
+          provide: UserService,
+          deps: [Http, Logger, Broadcaster, AUTH_API_URL]
+        },
         Broadcaster
       ]
     });

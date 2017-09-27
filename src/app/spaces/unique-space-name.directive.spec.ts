@@ -55,11 +55,11 @@ describe('Directive for Name Space', () => {
             related: 'http://example.com/api/spaces/1/iterations'
           }
         },
-        collaborators: {
-          links: {
-            related: 'http://example.com/api/spaces/1/iterations'
-          }
-        },
+        // collaborators: {
+        //   links: {
+        //     related: 'http://example.com/api/spaces/1/iterations'
+        //   }
+        // },
         'owned-by': {
           'data': {
             'id': '00000000-0000-0000-0000-000000000000',
