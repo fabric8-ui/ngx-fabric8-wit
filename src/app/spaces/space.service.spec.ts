@@ -1,4 +1,4 @@
-import { async, inject, TestBed } from '@angular/core/testing';
+import { async, getTestBed, inject, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, Http, Response, ResponseOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
 
@@ -45,7 +45,10 @@ describe('Service: SpaceService', () => {
           provide: AuthenticationService,
           useValue: fakeAuthService
         },
-        SpaceService,
+        {
+          provide: SpaceService,
+          deps: [Http, Logger, AuthenticationService, UserService, WIT_API_URL]
+        },
         {
           provide: WIT_API_URL,
           useValue: "http://example.com"
@@ -54,10 +57,16 @@ describe('Service: SpaceService', () => {
           provide: AUTH_API_URL,
           useValue: 'http://example.com/auth'
         },
-        UserService,
+        {
+          provide: UserService,
+          deps: [Http, Logger, Broadcaster, AUTH_API_URL]
+        },
         Broadcaster
       ]
-    });
+    }).compileComponents().then(() => {
+      //spaceService = TestBed.get(SpaceService);
+
+    })
   });
 
   beforeEach(inject(
@@ -97,11 +106,11 @@ describe('Service: SpaceService', () => {
             related: 'http://example.com/api/spaces/1/iterations'
           }
         },
-        collaborators: {
-          links: {
-            related: 'http://example.com/api/spaces/1/iterations'
-          }
-        },
+        // collaborators: {
+        //   links: {
+        //     related: 'http://example.com/api/spaces/1/iterations'
+        //   }
+        // },
         'owned-by': {
           'data': {
             'id': '00000000-0000-0000-0000-000000000000',
@@ -115,7 +124,7 @@ describe('Service: SpaceService', () => {
   let expectedResponse = cloneDeep(responseData);
 
 
-  it('Get spaces', async(() => {
+  it('Get spaces', (() => {
     // given
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
