@@ -4,18 +4,20 @@ import { MockBackend } from '@angular/http/testing';
 
 import { cloneDeep } from 'lodash';
 
-import { AuthenticationService, UserService, AUTH_API_URL } from 'ngx-login-client';
+import { AuthenticationService, UserService, AUTH_API_URL, User } from 'ngx-login-client';
 import { Broadcaster, Logger } from 'ngx-base';
 
 import { WIT_API_URL } from "../api/wit-api";
 import { Space } from '../models/space';
 import { SpaceService } from './space.service';
+import { Observable } from 'rxjs/Observable';
 
 describe('Service: SpaceService', () => {
 
   let spaceService: SpaceService;
   let mockService: MockBackend;
   let fakeAuthService: any;
+  let fakeUserService: any;
   let mockLog: any;
 
   beforeEach(() => {
@@ -26,6 +28,11 @@ describe('Service: SpaceService', () => {
       },
       isLoggedIn: function () {
         return true;
+      }
+    };
+    fakeUserService = {
+      getUserByUserId: function(userId: string) {
+        return Observable.empty<User>();
       }
     };
     TestBed.configureTestingModule({
@@ -46,9 +53,10 @@ describe('Service: SpaceService', () => {
           useValue: fakeAuthService
         },
         {
-          provide: SpaceService,
-          deps: [Http, Logger, AuthenticationService, UserService, WIT_API_URL]
+          provide: UserService,
+          useValue: fakeUserService
         },
+        SpaceService,
         {
           provide: WIT_API_URL,
           useValue: "http://example.com"
@@ -56,10 +64,6 @@ describe('Service: SpaceService', () => {
         {
           provide: AUTH_API_URL,
           useValue: 'http://example.com/auth'
-        },
-        {
-          provide: UserService,
-          deps: [Http, Logger, Broadcaster, AUTH_API_URL]
         },
         Broadcaster
       ]
