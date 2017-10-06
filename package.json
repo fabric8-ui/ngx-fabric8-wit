@@ -140,7 +140,7 @@
     "rxjs": "5.4.3",
     "sass-loader": "6.0.6",
     "semantic-release": "7.0.2",
-    "source-map-loader": "0.2.1",
+    "source-map-loader": "0.2.2",
     "to-string-loader": "1.1.5",
     "ts-helpers": "1.1.2",
     "ts-node": "3.3.0",
