@@ -74,10 +74,11 @@
     "@angular/forms": "4.4.4",
     "@angular/http": "4.4.4",
     "lodash": "4.17.4",
-    "ngx-base": "2.2.8",
-    "ngx-login-client": "1.1.9"
+    "ngx-base": "^2.2.9",
+    "ngx-login-client": "^1.1.10"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+  },
   "devDependencies": {
     "@angular/common": "4.4.4",
     "@angular/compiler": "4.4.4",
