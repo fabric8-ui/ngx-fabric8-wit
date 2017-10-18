@@ -54,8 +54,7 @@
     "ng2",
     "ng4",
     "login",
-    "ng-login",
-    "auth"
+    "ng-login"
   ],
   "homepage": "https://github.com/fabric8-ui/ngx-fabric8-wit",
   "repository": {
