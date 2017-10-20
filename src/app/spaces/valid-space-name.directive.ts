@@ -8,6 +8,9 @@ import {
   AsyncValidatorFn
 } from '@angular/forms';
 
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/takeUntil';
+
 @Directive({
   selector: '[validSpaceName][ngModel]',
   providers: [{
