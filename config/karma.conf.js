@@ -26,6 +26,7 @@ module.exports = function(config) {
      * we are building the test environment in ./spec-bundle.js
      */
     files: [
+      { pattern: './src/assets/img/*', watched: false, included: false, served: true },
       { pattern: './config/spec-bundle.js', watched: false }
     ],
 
@@ -63,7 +64,7 @@ module.exports = function(config) {
     port: 9876,
 
     // enable / disable colors in the output (reporters and logs)
-    colors: true,
+    colors: !process.env.CI,
 
     /*
      * level of logging
