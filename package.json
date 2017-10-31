@@ -68,8 +68,7 @@
     "ngx-base": "^2.3.0",
     "ngx-login-client": "^1.2.0"
   },
-  "peerDependencies": {
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "@angular/common": "^4.4.0",
     "@angular/compiler": "^4.4.0",
