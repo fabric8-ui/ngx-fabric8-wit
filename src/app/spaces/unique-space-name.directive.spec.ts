@@ -55,6 +55,11 @@ describe('Directive for Name Space', () => {
             related: 'http://example.com/api/spaces/1/iterations'
           }
         },
+        workitemtypegroups: {
+          links: {
+            related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
+          }
+        }
         // collaborators: {
         //   links: {
         //     related: 'http://example.com/api/spaces/1/iterations'
