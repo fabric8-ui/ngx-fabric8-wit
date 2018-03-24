@@ -27,6 +27,7 @@ export class SpaceRelationships {
     areas: SpaceRelatedLink;
     iterations: SpaceRelatedLink;
     workitemtypegroups: SpaceRelatedLink;
+    workitemtypes?: SpaceRelatedLink;
     // this change breaks in fabric8-ui, fix it there to include this.
     //collaborators: SpaceRelatedLink;
     'owned-by': {
