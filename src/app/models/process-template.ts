@@ -2,7 +2,7 @@ export class ProcessTemplate {
   attributes: {
     'created-at': string;
     description: string;
-    isBaseTemplate: boolean;
+    'can-construct': boolean;
     name: string;
     'updated-at': string;
     version: number
