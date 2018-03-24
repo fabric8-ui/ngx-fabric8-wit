@@ -5,7 +5,6 @@ import { User } from "ngx-login-client";
 export interface Space {
     name: string;
     path: String;
-    process?: ProcessTemplate;
     privateSpace?: boolean;
     teams: Team[];
     defaultTeam: Team;
@@ -36,6 +35,16 @@ export class SpaceRelationships {
         type: string;
       };
     };
+    'space-template'?: {
+      data: {
+        id: string;
+        type: 'spacetemplates'
+      },
+      links?: {
+        related?: string;
+        self?: string;
+      }
+    }
 }
 
 export class SpaceRelatedLink {
