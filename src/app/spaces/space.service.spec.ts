@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash';
 import { AuthenticationService, UserService, AUTH_API_URL, User } from 'ngx-login-client';
 import { Broadcaster, Logger } from 'ngx-base';
 
-import { WIT_API_URL } from "../api/wit-api";
+import { WIT_API_URL } from '../api/wit-api';
 import { Space } from '../models/space';
 import { SpaceService } from './space.service';
 import { Observable } from 'rxjs/Observable';
@@ -59,7 +59,7 @@ describe('Service: SpaceService', () => {
         SpaceService,
         {
           provide: WIT_API_URL,
-          useValue: "http://example.com/"
+          useValue: 'http://example.com/'
         },
         {
           provide: AUTH_API_URL,
@@ -70,7 +70,7 @@ describe('Service: SpaceService', () => {
     }).compileComponents().then(() => {
       //spaceService = TestBed.get(SpaceService);
 
-    })
+    });
   });
 
   beforeEach(inject(
@@ -181,7 +181,6 @@ describe('Service: SpaceService', () => {
       }
     }
   ];
-  let responseWithSlash = { data: responseDataWithSlash, links: {} };
 
 
   it('Get spaces', (() => {
@@ -284,9 +283,9 @@ describe('Service: SpaceService', () => {
         })
       ));
     });
-    let userName = "testuser";
+    let userName = 'testuser';
     // when
-    spaceService.getSpaceByName(userName,responseData[0].attributes.name)
+    spaceService.getSpaceByName(userName, responseData[0].attributes.name)
       .subscribe((data: Space) => {
         // then
         expect(data.id).toEqual(expectedResponse[0].id);
@@ -299,8 +298,10 @@ describe('Service: SpaceService', () => {
   it('Get a single space with plus, space and slash character', async(() => {
     // given
     mockService.connections.subscribe((connection: any) => {
-      expect(connection.request.url).toMatch(/.*test\%2Bus%20er.*/, 'url username not properly encoded');
-      expect(connection.request.url).toMatch(/.*Test\%2FSpace.*/, 'url spacename not properly encoded');
+      expect(connection.request.url)
+          .toMatch(/.*test\%2Bus%20er.*/, 'url username not properly encoded');
+      expect(connection.request.url)
+          .toMatch(/.*Test\%2FSpace.*/, 'url spacename not properly encoded');
       connection.mockRespond(new Response(
         new ResponseOptions({
           body: JSON.stringify({data: responseDataWithSlash[0]}),
@@ -308,9 +309,9 @@ describe('Service: SpaceService', () => {
         })
       ));
     });
-    let userName = "test+us er";
+    let userName = 'test+us er';
     // when
-    spaceService.getSpaceByName(userName,responseDataWithSlash[0].attributes.name)
+    spaceService.getSpaceByName(userName, responseDataWithSlash[0].attributes.name)
       .subscribe((data: Space) => {
         // then
         expect(data.id).toEqual(expectedResponse[0].id);
@@ -325,9 +326,9 @@ describe('Service: SpaceService', () => {
     mockService.connections.subscribe((connection: any) => {
       connection.mockError(new Error('some error'));
     });
-    let userName = "testuser";
+    let userName = 'testuser';
     // when
-    spaceService.getSpaceByName(userName,responseData[0].attributes.name)
+    spaceService.getSpaceByName(userName, responseData[0].attributes.name)
       .subscribe((data: Space) => {
         fail('Get a single space should be in error');
       }, // then
@@ -346,7 +347,7 @@ describe('Service: SpaceService', () => {
       ));
     });
 
-    spaceService.search("test")
+    spaceService.search('test')
       .subscribe((data: Space[]) => {
         expect(data[0].id).toEqual(matchedData[0].id);
         expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
@@ -362,7 +363,7 @@ describe('Service: SpaceService', () => {
       connection.mockError(new Error('some error'));
     });
     // when
-    spaceService.search("test")
+    spaceService.search('test')
       .subscribe((data: Space[]) => {
         fail('Search a space by name should be in error');
       }, // then
