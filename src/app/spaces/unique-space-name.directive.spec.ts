@@ -59,7 +59,7 @@ describe('Directive for Name Space', () => {
           links: {
             related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
           }
-        }
+        },
         // collaborators: {
         //   links: {
         //     related: 'http://example.com/api/spaces/1/iterations'

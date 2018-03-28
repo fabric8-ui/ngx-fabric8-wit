@@ -59,7 +59,7 @@ describe('Service: SpaceService', () => {
         SpaceService,
         {
           provide: WIT_API_URL,
-          useValue: "http://example.com"
+          useValue: "http://example.com/"
         },
         {
           provide: AUTH_API_URL,
@@ -114,7 +114,7 @@ describe('Service: SpaceService', () => {
           links: {
             related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
           }
-        }
+        },
         // collaborators: {
         //   links: {
         //     related: 'http://example.com/api/spaces/1/iterations'
@@ -131,6 +131,57 @@ describe('Service: SpaceService', () => {
   ];
   let response = { data: responseData, links: {} };
   let expectedResponse = cloneDeep(responseData);
+
+  // for odd characters
+  let responseDataWithSlash: Space[] = [
+    {
+      name: 'Test/Space',
+      path: 'test/space',
+      teams: [],
+      defaultTeam: null,
+      'attributes': {
+        'name': 'Test/Space',
+        description: 'This is a space for unit test',
+        'created-at': null,
+        'updated-at': null,
+        'version': 0
+      },
+      'id': '1',
+      'type': 'spaces',
+      'links': {
+        'self': 'http://example.com/api/spaces/1'
+      },
+      'relationships': {
+        areas: {
+          links: {
+            related: 'http://example.com/api/spaces/1/areas'
+          }
+        },
+        iterations: {
+          links: {
+            related: 'http://example.com/api/spaces/1/iterations'
+          }
+        },
+        workitemtypegroups: {
+          links: {
+            related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
+          }
+        },
+        // collaborators: {
+        //   links: {
+        //     related: 'http://example.com/api/spaces/1/iterations'
+        //   }
+        // },
+        'owned-by': {
+          'data': {
+            'id': '00000000-0000-0000-0000-000000000000',
+            'type': 'identities'
+          }
+        }
+      }
+    }
+  ];
+  let responseWithSlash = { data: responseDataWithSlash, links: {} };
 
 
   it('Get spaces', (() => {
@@ -244,6 +295,30 @@ describe('Service: SpaceService', () => {
       });
   }));
 
+
+  it('Get a single space with plus, space and slash character', async(() => {
+    // given
+    mockService.connections.subscribe((connection: any) => {
+      expect(connection.request.url).toMatch(/.*test\%2Bus%20er.*/, 'url username not properly encoded');
+      expect(connection.request.url).toMatch(/.*Test\%2FSpace.*/, 'url spacename not properly encoded');
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify({data: responseDataWithSlash[0]}),
+          status: 200
+        })
+      ));
+    });
+    let userName = "test+us er";
+    // when
+    spaceService.getSpaceByName(userName,responseDataWithSlash[0].attributes.name)
+      .subscribe((data: Space) => {
+        // then
+        expect(data.id).toEqual(expectedResponse[0].id);
+        expect(data.attributes.description).toEqual(expectedResponse[0].attributes.description);
+      });
+  }));
+
+
   it('Get a single space in error', async(() => {
     // given
     mockLog.error.and.returnValue();
@@ -305,6 +380,26 @@ describe('Service: SpaceService', () => {
     });
 
     let userName = 'testUser';
+
+    spaceService.getSpacesByUser(userName).subscribe((data: Space[]) => {
+      expect(data[0].id).toEqual(expectedResponse[0].id);
+      expect(data[0].attributes.name).toEqual(expectedResponse[0].attributes.name);
+      expect(data[0].attributes.description).toEqual(expectedResponse[0].attributes.description);
+    });
+  }));
+
+  it('Get spaces by userName including plus', async(() => {
+    mockService.connections.subscribe((connection: any) => {
+      expect(connection.request.url).toMatch(/.*test\%2BUser.*/, 'url not properly encoded');
+      connection.mockRespond(new Response(
+        new ResponseOptions({
+          body: JSON.stringify(response),
+          status: 200
+        })
+      ));
+    });
+
+    let userName = 'test+User';
 
     spaceService.getSpacesByUser(userName).subscribe((data: Space[]) => {
       expect(data[0].id).toEqual(expectedResponse[0].id);
