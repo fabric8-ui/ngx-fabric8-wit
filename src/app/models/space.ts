@@ -1,6 +1,6 @@
+import { User } from 'ngx-login-client';
+
 import { Team } from './team';
-import { ProcessTemplate } from './process-template';
-import { User } from "ngx-login-client";
 
 export interface Space {
     name: string;
