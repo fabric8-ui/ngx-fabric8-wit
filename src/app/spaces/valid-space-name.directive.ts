@@ -20,7 +20,7 @@ import 'rxjs/operators/takeUntil';
 })
 export class ValidSpaceNameValidatorDirective implements Validator, OnChanges {
 
-  static readonly MIN_SPACE_NAME_LENGTH = 4;
+  static readonly MIN_SPACE_NAME_LENGTH = 1;
   static readonly MAX_SPACE_NAME_LENGTH = 63;
 
 
@@ -50,7 +50,7 @@ export class ValidSpaceNameValidatorDirective implements Validator, OnChanges {
 export function validSpaceNameValidator(): AsyncValidatorFn {
 
   let changed$ = new Subject<any>();
-  let ALLOWED_SPACE_NAMES = /^[a-z\d][a-z\d\s-_]*[a-z\d]$/i;
+  let ALLOWED_SPACE_NAMES = /(^[a-z\d][a-z\d\s-_]*[a-z\d]$)|(^[a-z\d]$)/i;
 
   return (control: AbstractControl): Observable<{ [key: string]: any }> => {
     changed$.next();

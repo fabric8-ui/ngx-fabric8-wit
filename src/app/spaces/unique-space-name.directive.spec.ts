@@ -1,11 +1,11 @@
 import { async, TestBed } from '@angular/core/testing';
-import { UniqueSpaceNameValidatorDirective } from './unique-space-name.directive'
+import { UniqueSpaceNameValidatorDirective } from './unique-space-name.directive';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { SpaceService } from './space.service';
 import { UserService } from 'ngx-login-client';
-import { Space } from '../models/space'
+import { Space } from '../models/space';
 import { Observable, ConnectableObservable } from 'rxjs';
 
 @Component({
@@ -59,7 +59,7 @@ describe('Directive for Name Space', () => {
           links: {
             related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
           }
-        }
+        },
         // collaborators: {
         //   links: {
         //     related: 'http://example.com/api/spaces/1/iterations'
@@ -76,20 +76,23 @@ describe('Directive for Name Space', () => {
     TestBed.configureTestingModule({
       imports: [FormsModule],
       declarations: [TestSpaceNameComponent, UniqueSpaceNameValidatorDirective],
-      providers:[{provide: SpaceService, useValue: spaceServiceSpy}, {provide: UserService, useValue: userServiceSpy}]
+      providers: [
+        {provide: SpaceService, useValue: spaceServiceSpy},
+        {provide: UserService, useValue: userServiceSpy}
+        ]
     });
   });
 
   it('Validate false when 2 spaces exist with same name', async(() => {
     // given
     let user = {
-      "attributes": {
-        "fullName": "name",
-        "imageURL": "",
-        "username": "myUser"
+      'attributes': {
+        'fullName': 'name',
+        'imageURL': '',
+        'username': 'myUser'
       },
-      "id": "userId",
-      "type": "userType"
+      'id': 'userId',
+      'type': 'userType'
     };
     let fixture = TestBed.createComponent(TestSpaceNameComponent);
     userServiceSpy.loggedInUser = ConnectableObservable.of(user);
@@ -99,7 +102,7 @@ describe('Directive for Name Space', () => {
     let comp = fixture.componentInstance;
     let debug = fixture.debugElement;
     let input = debug.query(By.css('input'));
-    input.nativeElement.value = 'start'
+    input.nativeElement.value = 'start';
     input.nativeElement.dispatchEvent( new Event('input'));
     fixture.detectChanges();
 
