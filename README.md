@@ -88,7 +88,7 @@ fabric8-ui, you should:
 1. Run `npm run watch:library` in this directory. This will build ngx-fabric8-wit as
 a library and then set up a watch task to rebuild any ts, html and scss files you
 change.
-2. In the webapp into which you are embedding, run `npm link <path to ngx-fabric8-wit>/dist-watch`.
+2. In the webapp into which you are embedding, run `npm link <path to ngx-fabric8-wit>/dist-watch --production`.
 This will create a symlink from `node_modules/ngx-fabric8-wit` to the `dist-watch` directory
 and install that symlinked node module into your webapp.
 3. Run your webapp in development mode, making sure you have a watch on `node_modules/ngx-fabric8-wit`
