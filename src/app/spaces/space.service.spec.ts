@@ -1,6 +1,6 @@
 import { async, getTestBed, inject, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, Http, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { MockBackend, MockConnection } from '@angular/http/testing';
 
 import { cloneDeep } from 'lodash';
 
@@ -129,7 +129,7 @@ describe('Service: SpaceService', () => {
       }
     }
   ];
-  let response = { data: responseData, links: {} };
+  let response = { data: responseData, links: {}, meta: {} };
   let expectedResponse = cloneDeep(responseData);
 
   // for odd characters
@@ -337,11 +337,15 @@ describe('Service: SpaceService', () => {
 
   it('Search a space by name', async(() => {
     let matchedData: Space[] = cloneDeep(responseData);
+    let resp: any = cloneDeep(response);
+    resp.links['next'] =
+      'https://example.com/api/search/spaces?page[offset]=20\u0026page[limit]=20\u0026q=test';
+    resp.meta['totalCount'] = 5;
 
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify(response),
+          body: JSON.stringify(resp),
           status: 200
         })
       ));
@@ -353,7 +357,86 @@ describe('Service: SpaceService', () => {
         expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
         expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
       });
+
+    spaceService.getTotalCount()
+      .subscribe((totalCount: number) => {
+        expect(totalCount).toEqual(5);
+      });
   }));
+
+  describe('Search by name with pagination', () => {
+    it('should default to first page with page size of 20', async(() => {
+      let matchedData: Space[] = cloneDeep(responseData);
+      let resp: any = cloneDeep(response);
+      resp.meta['totalCount'] = 40;
+
+      mockService.connections.subscribe((connection: MockConnection) => {
+        expect(connection.request.url)
+          .toEqual('http://example.com/search/spaces?q=test&page%5Boffset%5D=0&page%5Blimit%5D=20');
+        connection.mockRespond(new Response(
+          new ResponseOptions({
+            body: JSON.stringify(resp),
+            status: 200
+          })
+        ));
+      });
+
+      spaceService.search('test')
+        .subscribe((data: Space[]) => {
+          expect(data[0].id).toEqual(matchedData[0].id);
+          expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
+          expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
+        });
+    }));
+
+    it('should default to first page and allow specified page size', async(() => {
+      let matchedData: Space[] = cloneDeep(responseData);
+      let resp: any = cloneDeep(response);
+      resp.meta['totalCount'] = 40;
+
+      mockService.connections.subscribe((connection: MockConnection) => {
+        expect(connection.request.url)
+          .toEqual('http://example.com/search/spaces?q=test&page%5Boffset%5D=0&page%5Blimit%5D=10');
+        connection.mockRespond(new Response(
+          new ResponseOptions({
+            body: JSON.stringify(resp),
+            status: 200
+          })
+        ));
+      });
+
+      spaceService.search('test', 10)
+        .subscribe((data: Space[]) => {
+          expect(data[0].id).toEqual(matchedData[0].id);
+          expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
+          expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
+        });
+    }));
+
+    it('should offset correctly', async(() => {
+      let matchedData: Space[] = cloneDeep(responseData);
+      let resp: any = cloneDeep(response);
+      resp.meta['totalCount'] = 40;
+
+      mockService.connections.subscribe((connection: MockConnection) => {
+        expect(connection.request.url)
+          .toEqual('http://example.com/search/spaces?q=test&page%5Boffset%5D=16&page%5Blimit%5D=2');
+        connection.mockRespond(new Response(
+          new ResponseOptions({
+            body: JSON.stringify(resp),
+            status: 200
+          })
+        ));
+      });
+
+      spaceService.search('test', 2, 8)
+        .subscribe((data: Space[]) => {
+          expect(data[0].id).toEqual(matchedData[0].id);
+          expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
+          expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
+        });
+    }));
+  });
 
   it('Search a space by name in error', async(() => {
     // given

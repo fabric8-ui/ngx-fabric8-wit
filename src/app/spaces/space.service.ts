@@ -1,6 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Headers, Http, URLSearchParams } from '@angular/http';
-import { cloneDeep } from 'lodash';
+import { Headers, Http, URLSearchParams, RequestOptionsArgs } from '@angular/http';
 import { AuthenticationService, User, UserService } from 'ngx-login-client';
 import { Logger } from 'ngx-base';
 import { Observable } from 'rxjs';
@@ -16,6 +15,7 @@ export class SpaceService {
   private namedSpacesUrl: string;
   private searchSpacesUrl: string;
   private nextLink: string = null;
+  private totalCount: number = -1;
 
   constructor(
     private http: Http,
@@ -58,9 +58,15 @@ export class SpaceService {
       });
   }
 
-  getSpacesDelegate(url: string, isAll: boolean): Observable<Space[]> {
+  getSpacesDelegate(url: string, isAll: boolean, params?: URLSearchParams): Observable<Space[]> {
+    const options: RequestOptionsArgs = {
+      headers: this.headers
+    };
+    if (params) {
+      options.search = params;
+    }
     return this.http
-      .get(url, { headers: this.headers })
+      .get(url, options)
       .map(response => {
         // Extract links from JSON API response.
         // and set the nextLink, if server indicates more resources
@@ -70,6 +76,12 @@ export class SpaceService {
           this.nextLink = links.next;
         } else {
           this.nextLink = null;
+        }
+        let meta = response.json().meta;
+        if (meta && meta.hasOwnProperty('totalCount')) {
+          this.totalCount = meta.totalCount;
+        } else {
+          this.totalCount = -1;
         }
         // Extract data from JSON API response, and assert to an array of spaces.
         let newSpaces: Space[] = response.json().data as Space[];
@@ -125,26 +137,25 @@ export class SpaceService {
       });
   }
 
-  search(searchText: string): Observable<Space[]> {
+  search(searchText: string, pageSize: number = 20, pageNumber: number = 0): Observable<Space[]> {
     let url = this.searchSpacesUrl;
     let params: URLSearchParams = new URLSearchParams();
     if (searchText === '') {
       searchText = '*';
     }
     params.set('q', searchText);
+    params.set('page[offset]', String(pageSize * pageNumber));
+    params.set('page[limit]', String(pageSize));
 
-    return this.http
-      .get(url, { search: params, headers: this.headers })
-      .map(response => {
-        // Extract data from JSON API response, and assert to an array of spaces.
-        return response.json().data as Space[];
-      })
-      .switchMap(spaces => {
-        return this.resolveOwners(spaces);
-      })
-      .catch((error) => {
-        return this.handleError(error);
-      });
+    return this.getSpacesDelegate(url, false, params);
+  }
+
+  getMoreSearchResults(): Observable<Space[]> {
+    if (this.nextLink) {
+      return this.getSpacesDelegate(this.nextLink, false);
+    } else {
+      return Observable.throw('No more spaces found');
+    }
   }
 
   // Currently serves to fetch the list of all spaces owned by a user.
@@ -155,6 +166,7 @@ export class SpaceService {
     let isAll = false;
     return this.getSpacesDelegate(url, isAll);
   }
+
   getMoreSpacesByUser(): Observable<Space[]> {
     if (this.nextLink) {
       return this.getSpacesDelegate(this.nextLink, false);
@@ -173,6 +185,12 @@ export class SpaceService {
       .catch((error) => {
         return this.handleError(error);
       });
+  }
+
+  // returns the "meta.totalCount" field of the previous query. -1 if there is no previous query,
+  // or if the previous query did not have the totalCount property.
+  getTotalCount(): Observable<number> {
+    return Observable.of(this.totalCount);
   }
 
   private handleError(error: any) {
