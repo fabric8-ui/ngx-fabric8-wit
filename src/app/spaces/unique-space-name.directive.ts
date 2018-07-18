@@ -58,14 +58,21 @@ export function uniqueSpaceNameValidator(
       .debounceTime(200)
       .distinctUntilChanged()
       .takeUntil(changed$)
-      .switchMap(value => userService.loggedInUser
+      .switchMap(() => userService.loggedInUser
         .switchMap(user => {
           return spaceService
             .getSpaceByName(user.attributes.username, control.value ? control.value.replace(' ', '_') : control.value)
             .map(val => {
-              return { unique: { valid: false, existingSpace: val, requestedName: control.value } };
+              return {
+                unique: {
+                  valid: false,
+                  existingSpace: val,
+                  requestedName: control.value,
+                  message: `The Space Name ${control.value}  is already in use as ${val.relationalData.creator.attributes.username}/${val.attributes.name}`
+                }
+              };
             })
-            .catch(val => {
+            .catch(() => {
               return Observable.of(null);
             });
         }))

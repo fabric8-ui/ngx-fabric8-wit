@@ -50,7 +50,7 @@ export class ValidSpaceNameValidatorDirective implements Validator, OnChanges {
 export function validSpaceNameValidator(): AsyncValidatorFn {
 
   let changed$ = new Subject<any>();
-  let ALLOWED_SPACE_NAMES = /(^[a-z\d][a-z\d\s-_]*[a-z\d]$)|(^[a-z\d]$)/i;
+  let ALLOWED_SPACE_NAMES = /(^[a-z\d][a-z\d-_]*[a-z\d]$)|(^[a-z\d]$)/i;
 
   return (control: AbstractControl): Observable<{ [key: string]: any }> => {
     changed$.next();
@@ -58,13 +58,14 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
       .debounceTime(50)
       .distinctUntilChanged()
       .takeUntil(changed$)
-      .map(value => {
+      .map(() => {
         if (!control.value || control.value.toString().length > ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH) {
           return {
             maxLength: {
               valid: false,
               requestedName: control.value,
               max: ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH,
+              message: `Space Name cannot be more than ${ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH} characters long`
             }
           };
         }
@@ -74,7 +75,8 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
             minLength: {
               valid: false,
               requestedName: control.value,
-              min: ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH
+              min: ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH,
+              message: `Space Name must be at least ${ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH} characters long.`
             }
           };
         } else if (!strVal.match(ALLOWED_SPACE_NAMES)) {
@@ -82,7 +84,10 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
             invalid: {
               valid: false,
               requestedName: control.value,
-              allowedChars: ALLOWED_SPACE_NAMES
+              allowedChars: ALLOWED_SPACE_NAMES,
+              message:
+                'Space Name must contain only letters, numbers, underscores (_)' +
+                'or hyphens(-). It cannot start or end with an underscore or a hyphen'
             }
           };
         }

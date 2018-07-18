@@ -60,16 +60,22 @@ describe('Directive for Name Space', () => {
             related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
           }
         },
-        // collaborators: {
-        //   links: {
-        //     related: 'http://example.com/api/spaces/1/iterations'
-        //   }
-        // },
         'owned-by': {
           'data': {
             'id': '00000000-0000-0000-0000-000000000000',
             'type': 'identities'
           }
+        }
+      },
+      relationalData: {
+        creator: {
+          attributes: {
+            fullName: 'name',
+            imageURL: 'url',
+            username: 'name'
+          },
+          id: 'id',
+          type: 'type'
         }
       }
     };
@@ -84,7 +90,6 @@ describe('Directive for Name Space', () => {
   });
 
   it('Validate false when 2 spaces exist with same name', async(() => {
-    // given
     let user = {
       'attributes': {
         'fullName': 'name',
@@ -99,7 +104,6 @@ describe('Directive for Name Space', () => {
     spaceServiceSpy.getSpaceByName.and.returnValue(Observable.of(space));
 
 
-    let comp = fixture.componentInstance;
     let debug = fixture.debugElement;
     let input = debug.query(By.css('input'));
     input.nativeElement.value = 'start';
@@ -107,17 +111,17 @@ describe('Directive for Name Space', () => {
     fixture.detectChanges();
 
    fixture.whenStable().then(() => {
-     // when
       input.nativeElement.value = 'TestSpace';
       input.nativeElement.dispatchEvent( new Event('input'));
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         let form: NgForm = debug.children[0].injector.get(NgForm);
         let control = form.control.get('spaceName');
-        // then
         expect(control.hasError('unique')).toBe(true);
         expect(control.errors.unique.valid).toBeFalsy();
         expect(control.errors.unique.existingSpace.name).toEqual('TestSpace');
+        let expectedMessage = 'The Space Name TestSpace  is already in use as name/TestSpace';
+        expect(control.errors.unique.message).toEqual(expectedMessage);
       });
    });
   }));
