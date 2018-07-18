@@ -87,7 +87,7 @@ export class SpaceService {
         let newSpaces: Space[] = response.json().data as Space[];
         return newSpaces;
       })
-      .switchMap(spaces => {
+      .flatMap(spaces => {
         return this.resolveOwners(spaces);
       })
       .catch((error) => {
@@ -228,15 +228,16 @@ export class SpaceService {
         return Observable.empty<User>();
       }))
       // map the user objects back to the spaces to return a stream of spaces
-      .map(owner => {
-        if (owner) {
-          for (let space of spaces) {
-            space.relationalData = space.relationalData || {};
-            if (owner.id === space.relationships['owned-by'].data.id) {
+      .toArray()
+      .map(owners => {
+        owners.forEach((owner: User): void => {
+          spaces
+            .filter((space: Space): boolean => space.relationships['owned-by'].data.id === owner.id)
+            .forEach((space: Space): void => {
+              space.relationalData = space.relationalData || {};
               space.relationalData.creator = owner;
-            }
-          }
-        }
+            });
+        });
         return spaces;
       });
   }
