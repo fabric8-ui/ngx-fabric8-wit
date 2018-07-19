@@ -184,7 +184,8 @@ describe('Service: SpaceService', () => {
 
   it('Get spaces', (() => {
     // given
-    mockService.connections.subscribe((connection: any) => {
+    mockService.connections.subscribe((connection: MockConnection) => {
+      expect(connection.request.url).toEqual('http://example.com/spaces?page[limit]=20');
       connection.mockRespond(new Response(
         new ResponseOptions({
           body: JSON.stringify(response),
@@ -274,7 +275,8 @@ describe('Service: SpaceService', () => {
 
   it('Get a single space', async(() => {
     // given
-    mockService.connections.subscribe((connection: any) => {
+    mockService.connections.subscribe((connection: MockConnection) => {
+      expect(connection.request.url).toEqual('http://example.com/namedspaces/testuser/TestSpace');
       connection.mockRespond(new Response(
         new ResponseOptions({
           body: JSON.stringify({data: responseData[0]}),
