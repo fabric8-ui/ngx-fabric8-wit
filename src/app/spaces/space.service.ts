@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Headers, Http, URLSearchParams, RequestOptionsArgs } from '@angular/http';
+import { Headers, Http, URLSearchParams, Response, RequestOptionsArgs } from '@angular/http';
 import { AuthenticationService, User, UserService } from 'ngx-login-client';
 import { Logger } from 'ngx-base';
 import { Observable } from 'rxjs';
@@ -10,18 +10,18 @@ import { Space } from '../models/space';
 @Injectable()
 export class SpaceService {
 
-  private headers = new Headers({ 'Content-Type': 'application/json' });
-  private spacesUrl: string;
-  private namedSpacesUrl: string;
-  private searchSpacesUrl: string;
+  private readonly headers = new Headers({ 'Content-Type': 'application/json' });
+  private readonly spacesUrl: string;
+  private readonly namedSpacesUrl: string;
+  private readonly searchSpacesUrl: string;
   private nextLink: string = null;
   private totalCount: number = -1;
 
   constructor(
-    private http: Http,
-    private logger: Logger,
-    private auth: AuthenticationService,
-    private userService: UserService,
+    private readonly http: Http,
+    private readonly logger: Logger,
+    private readonly auth: AuthenticationService,
+    private readonly userService: UserService,
     @Inject(WIT_API_URL) apiUrl: string) {
     if (this.auth.getToken() != null) {
       this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
@@ -32,7 +32,7 @@ export class SpaceService {
   }
 
   getSpaces(pageSize: number = 20): Observable<Space[]> {
-    let url = this.spacesUrl + '?page[limit]=' + pageSize;
+    const url: string = `${this.spacesUrl}?page[limit]=${pageSize}`;
     return this.getSpacesDelegate(url, true);
   }
 
@@ -45,17 +45,11 @@ export class SpaceService {
   }
 
   getSpaceByName(userName: string, spaceName: string): Observable<Space> {
-    let url = `${this.namedSpacesUrl}/`
-                  + encodeURIComponent(`${userName}`) + `/`
-                  + encodeURIComponent(`${spaceName}`);
+    const url: string = `${this.namedSpacesUrl}/${encodeURIComponent(userName)}/${encodeURIComponent(spaceName)}`;
     return this.http.get(url, { headers: this.headers })
-      .map((response) => {
-        return response.json().data as Space;
-      })
-      .switchMap(val => this.resolveOwner(val))
-      .catch((error) => {
-        return this.handleError(error);
-      });
+      .map((response: Response): Space => response.json().data)
+      .switchMap((space: Space): Observable<Space> => this.resolveOwner(space))
+      .catch((error: any): Observable<Space> => this.handleError(error));
   }
 
   getSpacesDelegate(url: string, isAll: boolean, params?: URLSearchParams): Observable<Space[]> {
@@ -67,11 +61,11 @@ export class SpaceService {
     }
     return this.http
       .get(url, options)
-      .map(response => {
+      .map((response: Response): Space[] => {
         // Extract links from JSON API response.
         // and set the nextLink, if server indicates more resources
         // in paginated collection through a 'next' link.
-        let links = response.json().links;
+        const links: any = response.json().links;
         if (links.hasOwnProperty('next')) {
           this.nextLink = links.next;
         } else {
@@ -84,62 +78,43 @@ export class SpaceService {
           this.totalCount = -1;
         }
         // Extract data from JSON API response, and assert to an array of spaces.
-        let newSpaces: Space[] = response.json().data as Space[];
-        return newSpaces;
+        return response.json().data as Space[];
       })
-      .switchMap(spaces => {
-        return this.resolveOwners(spaces);
-      })
-      .catch((error) => {
-        return this.handleError(error);
-      });
+      .flatMap((spaces: Space[]): Observable<Space[]> => this.resolveOwners(spaces))
+      .catch((error: any): Observable<Space[]> => this.handleError(error));
   }
 
   create(space: Space): Observable<Space> {
-    let url = this.spacesUrl;
-    let payload = JSON.stringify({ data: space });
+    const url: string = this.spacesUrl;
+    const payload: string = JSON.stringify({ data: space });
     return this.http
       .post(url, payload, { headers: this.headers })
-      .map(response => {
-        return response.json().data as Space;
-      })
-      .switchMap(val => {
-        return this.resolveOwner(val);
-      })
-      .catch((error) => {
-        return this.handleError(error);
-      });
+      .map((response: Response): Space => response.json().data)
+      .switchMap((val: Space): Observable<Space> => this.resolveOwner(val))
+      .catch((error: any): Observable<Space> => this.handleError(error));
   }
 
   update(space: Space): Observable<Space> {
-    let url = `${this.spacesUrl}/${space.id}`;
-    let payload = JSON.stringify({ data: space });
+    const url: string = `${this.spacesUrl}/${space.id}`;
+    const payload: string = JSON.stringify({ data: space });
     return this.http
       .patch(url, payload, { headers: this.headers })
-      .map(response => {
-        return response.json().data as Space;
-      })
-      .switchMap(val => {
-        return this.resolveOwner(val);
-      })
-      .catch((error) => {
-        return this.handleError(error);
-      });
+      .map((response: Response): Space => response.json().data)
+      .switchMap((val: Space): Observable<Space> => this.resolveOwner(val))
+      .catch((error: any): Observable<Space> => this.handleError(error));
   }
 
   deleteSpace(space: Space): Observable<Space> {
-    let url = `${this.spacesUrl}/${space.id}`;
+    const url: string = `${this.spacesUrl}/${space.id}`;
     return this.http
       .delete(url, { headers: this.headers })
-      .map( () => {})
-      .catch((error) => {
-        return this.handleError(error);
-      });
+      .map(() => {})
+      .catch((error: any): Observable<any> => this.handleError(error));
   }
 
   search(searchText: string, pageSize: number = 20, pageNumber: number = 0): Observable<Space[]> {
-    let url = this.searchSpacesUrl;
-    let params: URLSearchParams = new URLSearchParams();
+    const url: string = this.searchSpacesUrl;
+    const params: URLSearchParams = new URLSearchParams();
     if (searchText === '') {
       searchText = '*';
     }
@@ -160,11 +135,8 @@ export class SpaceService {
 
   // Currently serves to fetch the list of all spaces owned by a user.
   getSpacesByUser(userName: string, pageSize: number = 20): Observable<Space[]> {
-    let url = `${this.namedSpacesUrl}` + '/'
-                  + encodeURIComponent(`${userName}`)
-                  + '?page[limit]=' + pageSize;
-    let isAll = false;
-    return this.getSpacesDelegate(url, isAll);
+    const url: string = `${this.namedSpacesUrl}/${encodeURIComponent(userName)}?page[limit]=${pageSize}`;
+    return this.getSpacesDelegate(url, false);
   }
 
   getMoreSpacesByUser(): Observable<Space[]> {
@@ -176,15 +148,11 @@ export class SpaceService {
   }
 
   getSpaceById(spaceId: string): Observable<Space> {
-    let url = `${this.spacesUrl}/${spaceId}`;
+    const url: string = `${this.spacesUrl}/${spaceId}`;
     return this.http.get(url, { headers: this.headers })
-      .map((response) => {
-        return response.json().data as Space;
-      })
-      .switchMap(val => this.resolveOwner(val))
-      .catch((error) => {
-        return this.handleError(error);
-      });
+      .map((response: Response): Space => response.json().data)
+      .switchMap((space: Space): Observable<Space> => this.resolveOwner(space))
+      .catch((error: any): Observable<Space> => this.handleError(error));
   }
 
   // returns the "meta.totalCount" field of the previous query. -1 if there is no previous query,
@@ -193,7 +161,7 @@ export class SpaceService {
     return Observable.of(this.totalCount);
   }
 
-  private handleError(error: any) {
+  private handleError(error: any): Observable<any> {
     this.logger.error(error);
     return Observable.throw(error.message || error);
   }
@@ -207,7 +175,7 @@ export class SpaceService {
     }
     return this.userService
       .getUserByUserId(space.relationships['owned-by'].data.id)
-      .map(owner => {
+      .map((owner: User): Space => {
         space.relationalData.creator = owner;
         return space;
       });
@@ -218,25 +186,27 @@ export class SpaceService {
       // Get a stream of spaces
       .from(spaces)
       // Map to a stream of owner Ids of these spaces
-      .map(space => space.relationships['owned-by'].data.id)
+      .map((space: Space): string => space.relationships['owned-by'].data.id)
       // Get only the unique owners in this stream of owner Ids
       .distinct()
       // Get the users from the server based on the owner Ids
       // and flatten the resulting stream , observables are returned
-      .flatMap(ownerId => this.userService.getUserByUserId(ownerId).catch(err => {
-        console.log('Error fetching user', ownerId, err);
-        return Observable.empty<User>();
-      }))
+      .flatMap((ownerId: string): Observable<User> =>
+        this.userService.getUserByUserId(ownerId).catch(err => {
+          console.log('Error fetching user', ownerId, err);
+          return Observable.empty<User>();
+        }))
       // map the user objects back to the spaces to return a stream of spaces
-      .map(owner => {
-        if (owner) {
-          for (let space of spaces) {
-            space.relationalData = space.relationalData || {};
-            if (owner.id === space.relationships['owned-by'].data.id) {
+      .toArray()
+      .map((owners: User[]): Space[] => {
+        owners.forEach((owner: User): void => {
+          spaces
+            .filter((space: Space): boolean => space.relationships['owned-by'].data.id === owner.id)
+            .forEach((space: Space): void => {
+              space.relationalData = space.relationalData || {};
               space.relationalData.creator = owner;
-            }
-          }
-        }
+            });
+        });
         return spaces;
       });
   }

@@ -11,6 +11,7 @@ import { WIT_API_URL } from '../api/wit-api';
 import { Space } from '../models/space';
 import { SpaceService } from './space.service';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 describe('Service: SpaceService', () => {
 
@@ -30,11 +31,9 @@ describe('Service: SpaceService', () => {
         return true;
       }
     };
-    fakeUserService = {
-      getUserByUserId: function(userId: string) {
-        return Observable.empty<User>();
-      }
-    };
+    const getUserByUserId: jasmine.Spy = jasmine.createSpy('UserService.getUserByUserId');
+    getUserByUserId.and.returnValue(Observable.empty());
+    fakeUserService = { getUserByUserId };
     TestBed.configureTestingModule({
       providers: [
         {
@@ -185,7 +184,8 @@ describe('Service: SpaceService', () => {
 
   it('Get spaces', (() => {
     // given
-    mockService.connections.subscribe((connection: any) => {
+    mockService.connections.subscribe((connection: MockConnection) => {
+      expect(connection.request.url).toEqual('http://example.com/spaces?page[limit]=20');
       connection.mockRespond(new Response(
         new ResponseOptions({
           body: JSON.stringify(response),
@@ -275,7 +275,8 @@ describe('Service: SpaceService', () => {
 
   it('Get a single space', async(() => {
     // given
-    mockService.connections.subscribe((connection: any) => {
+    mockService.connections.subscribe((connection: MockConnection) => {
+      expect(connection.request.url).toEqual('http://example.com/namedspaces/testuser/TestSpace');
       connection.mockRespond(new Response(
         new ResponseOptions({
           body: JSON.stringify({data: responseData[0]}),
@@ -336,16 +337,127 @@ describe('Service: SpaceService', () => {
   }));
 
   it('Search a space by name', async(() => {
-    let matchedData: Space[] = cloneDeep(responseData);
-    let resp: any = cloneDeep(response);
-    resp.links['next'] =
-      'https://example.com/api/search/spaces?page[offset]=20\u0026page[limit]=20\u0026q=test';
-    resp.meta['totalCount'] = 5;
+    const users: User[] = [
+      {
+        id: 'fooId',
+        attributes: {
+          username: 'userA'
+        }
+      } as User,
+      {
+        id: 'barId',
+        attributes: {
+          username: 'userB'
+        }
+      } as User
+    ];
+    const userService: { getUserByUserId: jasmine.Spy } = TestBed.get(UserService);
+    userService.getUserByUserId.and.callFake((id: string): Observable<User> => {
+      if (id === 'fooId') {
+        return Observable.of(users[0]);
+      } else if (id === 'barId') {
+        return Observable.of(users[1]);
+      } else {
+        return Observable.throw('unknown userId');
+      }
+    });
+    const resp: Space[] = [
+      {
+        name: 'TestSpace1',
+        path: 'testspace1',
+        teams: [],
+        defaultTeam: null,
+        'attributes': {
+          'name': 'TestSpace1',
+          description: 'This is a space for unit test',
+          'created-at': null,
+          'updated-at': null,
+          'version': 0
+        },
+        'id': '1',
+        'type': 'spaces',
+        'links': {
+          'self': 'http://example.com/api/spaces/1'
+        },
+        'relationships': {
+          areas: {
+            links: {
+              related: 'http://example.com/api/spaces/1/areas'
+            }
+          },
+          iterations: {
+            links: {
+              related: 'http://example.com/api/spaces/1/iterations'
+            }
+          },
+          workitemtypegroups: {
+            links: {
+              related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
+            }
+          },
+          'owned-by': {
+            'data': {
+              'id': 'fooId',
+              'type': 'identities'
+            }
+          }
+        }
+      },
+      {
+        name: 'TestSpace2',
+        path: 'testspace2',
+        teams: [],
+        defaultTeam: null,
+        'attributes': {
+          'name': 'TestSpace2',
+          description: 'This is a space for unit test',
+          'created-at': null,
+          'updated-at': null,
+          'version': 0
+        },
+        'id': '2',
+        'type': 'spaces',
+        'links': {
+          'self': 'http://example.com/api/spaces/2'
+        },
+        'relationships': {
+          areas: {
+            links: {
+              related: 'http://example.com/api/spaces/2/areas'
+            }
+          },
+          iterations: {
+            links: {
+              related: 'http://example.com/api/spaces/2/iterations'
+            }
+          },
+          workitemtypegroups: {
+            links: {
+              related: 'http://example.com/api/spacetemplates/2/workitemtypegroups'
+            }
+          },
+          'owned-by': {
+            'data': {
+              'id': 'barId',
+              'type': 'identities'
+            }
+          }
+        }
+      }
+    ];
 
     mockService.connections.subscribe((connection: any) => {
       connection.mockRespond(new Response(
         new ResponseOptions({
-          body: JSON.stringify(resp),
+          body: JSON.stringify({
+            data: resp,
+            links: {
+              next: 'https://example.com/api/search/spaces?page[offset]=20\u0026page[limit]=20\u0026q=test'
+            },
+            meta: {
+              totalCount: 5
+            }
+          }),
           status: 200
         })
       ));
@@ -353,9 +465,15 @@ describe('Service: SpaceService', () => {
 
     spaceService.search('test')
       .subscribe((data: Space[]) => {
-        expect(data[0].id).toEqual(matchedData[0].id);
-        expect(data[0].attributes.name).toEqual(matchedData[0].attributes.name);
-        expect(data[0].attributes.description).toEqual(matchedData[0].attributes.description);
+        expect(data[0].id).toEqual(resp[0].id);
+        expect(data[0].attributes.name).toEqual(resp[0].attributes.name);
+        expect(data[0].attributes.description).toEqual(resp[0].attributes.description);
+        expect(data[0].relationalData.creator).toEqual(users[0]);
+
+        expect(data[1].id).toEqual(resp[1].id);
+        expect(data[1].attributes.name).toEqual(resp[1].attributes.name);
+        expect(data[1].attributes.description).toEqual(resp[1].attributes.description);
+        expect(data[1].relationalData.creator).toEqual(users[1]);
       });
 
     spaceService.getTotalCount()
