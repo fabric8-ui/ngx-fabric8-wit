@@ -1,4 +1,4 @@
-import { async, getTestBed, inject, TestBed } from '@angular/core/testing';
+import { async, inject, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, Http, Response, ResponseOptions } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
@@ -66,10 +66,7 @@ describe('Service: SpaceService', () => {
         },
         Broadcaster
       ]
-    }).compileComponents().then(() => {
-      //spaceService = TestBed.get(SpaceService);
-
-    });
+    }).compileComponents();
   });
 
   beforeEach(inject(
@@ -114,11 +111,6 @@ describe('Service: SpaceService', () => {
             related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
           }
         },
-        // collaborators: {
-        //   links: {
-        //     related: 'http://example.com/api/spaces/1/iterations'
-        //   }
-        // },
         'owned-by': {
           'data': {
             'id': '00000000-0000-0000-0000-000000000000',
@@ -166,11 +158,6 @@ describe('Service: SpaceService', () => {
             related: 'http://example.com/api/spacetemplates/1/workitemtypegroups'
           }
         },
-        // collaborators: {
-        //   links: {
-        //     related: 'http://example.com/api/spaces/1/iterations'
-        //   }
-        // },
         'owned-by': {
           'data': {
             'id': '00000000-0000-0000-0000-000000000000',
@@ -230,7 +217,7 @@ describe('Service: SpaceService', () => {
     });
     // when
     spaceService.create(responseData[0])
-      .subscribe((data: Space) => {
+      .subscribe(() => {
         fail('Add new space should be in error');
       }, // then
       error => expect(error).toEqual('some error'));
@@ -267,7 +254,7 @@ describe('Service: SpaceService', () => {
     });
     // when
     spaceService.update(updatedData)
-      .subscribe((data: Space) => {
+      .subscribe(() => {
         fail('Update a space should be in error');
       }, // then
       error => expect(error).toEqual('some error'));
@@ -330,7 +317,7 @@ describe('Service: SpaceService', () => {
     let userName = 'testuser';
     // when
     spaceService.getSpaceByName(userName, responseData[0].attributes.name)
-      .subscribe((data: Space) => {
+      .subscribe(() => {
         fail('Get a single space should be in error');
       }, // then
       error => expect(error).toEqual('some error'));
@@ -558,14 +545,13 @@ describe('Service: SpaceService', () => {
 
   it('Search a space by name in error', async(() => {
     // given
-    let matchedData: Space[] = cloneDeep(responseData);
     mockLog.error.and.returnValue();
     mockService.connections.subscribe((connection: any) => {
       connection.mockError(new Error('some error'));
     });
     // when
     spaceService.search('test')
-      .subscribe((data: Space[]) => {
+      .subscribe(() => {
         fail('Search a space by name should be in error');
       }, // then
       error => expect(error).toEqual('some error'));
@@ -612,14 +598,13 @@ describe('Service: SpaceService', () => {
 
   it('Get spaces by userName in error', async(() => {
     // given
-    let matchedData: Space[] = cloneDeep(responseData);
     mockLog.error.and.returnValue();
     mockService.connections.subscribe((connection: any) => {
       connection.mockError(new Error('some error'));
     });
     let userName = 'testUser';
     // when
-    spaceService.getSpacesByUser(userName).subscribe((data: Space[]) => {
+    spaceService.getSpacesByUser(userName).subscribe(() => {
       fail('Get spaces by userName should be in error');
     }, // then
     error => expect(error).toEqual('some error'));
@@ -654,10 +639,32 @@ describe('Service: SpaceService', () => {
     let spaceId = '1';
     // when
     spaceService.getSpaceById(spaceId)
-      .subscribe((data: Space) => {
+      .subscribe(() => {
         fail('Get a single space by Id should be in error');
       }, // then
     error => expect(error).toEqual('some error'));
+  }));
+
+  it('should not skip cluster when deleting by default' , async(() => {
+    mockService.connections.subscribe((connection: MockConnection) => {
+      let expectedUrl: string = 'http://example.com/spaces/mock-space-id?skipCluster=false';
+      expect(connection.request.url).toEqual(expectedUrl);
+      connection.mockRespond(new Response(new ResponseOptions({})));
+    });
+
+    let mockSpace = { id: 'mock-space-id'} as Space;
+    spaceService.deleteSpace(mockSpace);
+  }));
+
+  it('should skip cluster when deleting with true' , async(() => {
+    mockService.connections.subscribe((connection: MockConnection) => {
+      let expectedUrl: string = 'http://example.com/spaces/mock-space-id?skipCluster=true';
+      expect(connection.request.url).toEqual(expectedUrl);
+      connection.mockRespond(new Response(new ResponseOptions({})));
+    });
+
+    let mockSpace = { id: 'mock-space-id'} as Space;
+    spaceService.deleteSpace(mockSpace, true);
   }));
 
 });

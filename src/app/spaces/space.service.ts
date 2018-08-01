@@ -104,10 +104,13 @@ export class SpaceService {
       .catch((error: any): Observable<Space> => this.handleError(error));
   }
 
-  deleteSpace(space: Space): Observable<Space> {
+  deleteSpace(space: Space, skipCluster: boolean = false): Observable<Space> {
     const url: string = `${this.spacesUrl}/${space.id}`;
     return this.http
-      .delete(url, { headers: this.headers })
+      .delete(url, {
+        headers: this.headers,
+        params: new URLSearchParams(`skipCluster=${skipCluster}`)
+      })
       .map(() => {})
       .catch((error: any): Observable<any> => this.handleError(error));
   }
