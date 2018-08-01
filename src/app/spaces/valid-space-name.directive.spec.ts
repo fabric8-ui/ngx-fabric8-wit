@@ -45,8 +45,8 @@ describe('Directive for Name Space', () => {
         expect(control.errors.invalid.valid).toBeFalsy();
         expect(control.errors.invalid.valid).toBeFalsy();
         let expectedMessage =
-          'Space Name must contain only letters, numbers, underscores (_)' +
-          'or hyphens(-). It cannot start or end with an underscore or a hyphen';
+          'Space Name must contain only letters, numbers, underscores (_) ' +
+          'or hyphens (-). It cannot start or end with an underscore or a hyphen';
         expect(control.errors.invalid.message).toEqual(expectedMessage);
       });
     });
@@ -74,8 +74,8 @@ describe('Directive for Name Space', () => {
         expect(control.hasError('invalid')).toBe(true);
         expect(control.errors.invalid.valid).toBeFalsy();
         let expectedMessage =
-          'Space Name must contain only letters, numbers, underscores (_)' +
-          'or hyphens(-). It cannot start or end with an underscore or a hyphen';
+          'Space Name must contain only letters, numbers, underscores (_) ' +
+          'or hyphens (-). It cannot start or end with an underscore or a hyphen';
         expect(control.errors.invalid.message).toEqual(expectedMessage);
       });
     });

@@ -86,8 +86,8 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
               requestedName: control.value,
               allowedChars: ALLOWED_SPACE_NAMES,
               message:
-                'Space Name must contain only letters, numbers, underscores (_)' +
-                'or hyphens(-). It cannot start or end with an underscore or a hyphen'
+                'Space Name must contain only letters, numbers, underscores (_) ' +
+                'or hyphens (-). It cannot start or end with an underscore or a hyphen'
             }
           };
         }
