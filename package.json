@@ -172,6 +172,8 @@
     "rollup-plugin-angular-aot": "0.0.4",
     "run-sequence": "2.2.1",
     "rxjs": "6.2.2",
+    "rxjs-compat": "6.2.2",
+    "rxjs-tslint": "0.1.5",
     "script-ext-html-webpack-plugin": "2.0.1",
     "semantic-release": "8.2.0",
     "source-map-loader": "0.2.3",
