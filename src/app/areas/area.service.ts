@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams } from '@angular/http';
-import { cloneDeep } from 'lodash';
+
 import { AuthenticationService } from 'ngx-login-client';
 import { Logger } from 'ngx-base';
-import { Observable } from 'rxjs';
+import { Observable, throwError as observableThrowError } from 'rxjs';
 
 import { WIT_API_URL } from '../api/wit-api';
 import { Area } from '../models/area';
@@ -52,7 +52,7 @@ export class AreaService {
   }
 
   create(parentId: string, area: Area): Observable<Area> {
-    let url = this.areasUrl + "/" + parentId;
+    let url = this.areasUrl + '/' + parentId;
     let payload = JSON.stringify({ data: area });
     return this.http
       .post(url, payload, { headers: this.headers })
@@ -66,7 +66,7 @@ export class AreaService {
 
   private handleError(error: any) {
     this.logger.error(error);
-    return Observable.throw(error.message || error);
+    return observableThrowError(error.message || error);
   }
 
 }

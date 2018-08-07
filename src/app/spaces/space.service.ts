@@ -1,8 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams, Response, RequestOptionsArgs } from '@angular/http';
-import { AuthenticationService, User, UserService } from 'ngx-login-client';
+
+import { Observable, of as observableOf, throwError as observableThrowError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import { Logger } from 'ngx-base';
-import { Observable } from 'rxjs';
+import { AuthenticationService, User, UserService } from 'ngx-login-client';
 
 import { WIT_API_URL } from '../api/wit-api';
 import { Space } from '../models/space';
@@ -40,7 +43,7 @@ export class SpaceService {
     if (this.nextLink) {
       return this.getSpacesDelegate(this.nextLink, false);
     } else {
-      return Observable.throw('No more spaces found');
+      return observableThrowError('No more spaces found');
     }
   }
 
@@ -132,7 +135,7 @@ export class SpaceService {
     if (this.nextLink) {
       return this.getSpacesDelegate(this.nextLink, false);
     } else {
-      return Observable.throw('No more spaces found');
+      return observableThrowError('No more spaces found');
     }
   }
 
@@ -146,7 +149,7 @@ export class SpaceService {
     if (this.nextLink) {
       return this.getSpacesDelegate(this.nextLink, false);
     } else {
-      return Observable.throw('No more spaces found');
+      return observableThrowError('No more spaces found');
     }
   }
 
@@ -161,12 +164,12 @@ export class SpaceService {
   // returns the "meta.totalCount" field of the previous query. -1 if there is no previous query,
   // or if the previous query did not have the totalCount property.
   getTotalCount(): Observable<number> {
-    return Observable.of(this.totalCount);
+    return observableOf(this.totalCount);
   }
 
   private handleError(error: any): Observable<any> {
     this.logger.error(error);
-    return Observable.throw(error.message || error);
+    return observableThrowError(error.message || error);
   }
 
   private resolveOwner(space: Space): Observable<Space> {
@@ -177,11 +180,11 @@ export class SpaceService {
       return;
     }
     return this.userService
-      .getUserByUserId(space.relationships['owned-by'].data.id)
-      .map((owner: User): Space => {
+      .getUserByUserId(space.relationships['owned-by'].data.id).pipe(
+      map((owner: User): Space => {
         space.relationalData.creator = owner;
         return space;
-      });
+      }));
   }
 
   private resolveOwners(spaces: Space[]): Observable<Space[]> {
@@ -195,10 +198,10 @@ export class SpaceService {
       // Get the users from the server based on the owner Ids
       // and flatten the resulting stream , observables are returned
       .flatMap((ownerId: string): Observable<User> =>
-        this.userService.getUserByUserId(ownerId).catch(err => {
+        this.userService.getUserByUserId(ownerId).pipe(catchError(err => {
           console.log('Error fetching user', ownerId, err);
           return Observable.empty<User>();
-        }))
+        })))
       // map the user objects back to the spaces to return a stream of spaces
       .toArray()
       .map((owners: User[]): Space[] => {

@@ -1,6 +1,3 @@
-import { SpaceService } from './space.service';
-import { Observable, Subject } from 'rxjs';
-import { UserService } from 'ngx-login-client';
 import { SimpleChanges, OnChanges, Directive, Input, forwardRef } from '@angular/core';
 import {
   AbstractControl,
@@ -10,8 +7,12 @@ import {
   AsyncValidatorFn
 } from '@angular/forms';
 
-import 'rxjs/operators/first';
-import 'rxjs/operators/takeUntil';
+import { Observable, of as observableOf, Subject } from 'rxjs';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
+
+import { UserService } from 'ngx-login-client';
+
+import { SpaceService } from './space.service';
 
 @Directive({
   selector: '[uniqueSpaceName][ngModel]',
@@ -58,8 +59,8 @@ export function uniqueSpaceNameValidator(
       .debounceTime(200)
       .distinctUntilChanged()
       .takeUntil(changed$)
-      .switchMap(() => userService.loggedInUser
-        .switchMap(user => {
+      .switchMap(() => userService.loggedInUser.pipe(
+        switchMap(user => {
           return spaceService
             .getSpaceByName(user.attributes.username, control.value ? control.value.replace(' ', '_') : control.value)
             .map(val => {
@@ -68,14 +69,15 @@ export function uniqueSpaceNameValidator(
                   valid: false,
                   existingSpace: val,
                   requestedName: control.value,
-                  message: `The Space Name ${control.value}  is already in use as ${val.relationalData.creator.attributes.username}/${val.attributes.name}`
+                  message: `The Space Name ${control.value} is already in use as
+                    ${val.relationalData.creator.attributes.username}/${val.attributes.name}`
                 }
               };
             })
             .catch(() => {
-              return Observable.of(null);
+              return observableOf(null);
             });
-        }))
+        })))
       .first();
   };
 }

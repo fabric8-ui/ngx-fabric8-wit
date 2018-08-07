@@ -1,9 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
 import { Headers, Http, URLSearchParams, Response } from '@angular/http';
-import { cloneDeep } from 'lodash';
-import { AuthenticationService, User } from 'ngx-login-client';
+
+import {Observable, throwError as observableThrowError} from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
 import { Logger } from 'ngx-base';
-import { Observable } from 'rxjs';
+import { AuthenticationService, User } from 'ngx-login-client';
 
 import { WIT_API_URL } from '../api/wit-api';
 
@@ -65,32 +67,32 @@ export class CollaboratorService {
           return this.handleError(error);
         });
     } else {
-      return Observable.throw('No more collaborators found');
+      return observableThrowError('No more collaborators found');
     }
   }
 
   addCollaborators(spaceId: string, users: User[]): Observable<Response> {
-    let url = this.spacesUrl + "/" + spaceId + '/collaborators';
+    let url = this.spacesUrl + '/' + spaceId + '/collaborators';
     let payload = JSON.stringify({ data: users });
     return this.http
-      .post(url, payload, { headers: this.headers })
-      .catch((error) => {
+      .post(url, payload, { headers: this.headers }).pipe(
+      catchError((error) => {
         return this.handleError(error);
-      });
+      }));
   }
 
   removeCollaborator(spaceId: string, collaboratorId: string): Observable<void> {
-    let url = this.spacesUrl + "/" + spaceId + '/collaborators/' + collaboratorId;
+    let url = this.spacesUrl + '/' + spaceId + '/collaborators/' + collaboratorId;
     return this.http
-      .delete(url, { headers: this.headers })
-      .catch((error) => {
+      .delete(url, { headers: this.headers }).pipe(
+      catchError((error) => {
         return this.handleError(error);
-      });
+      }));
   }
 
   private handleError(error: any) {
     this.logger.error(error);
-    return Observable.throw(error.message || error);
+    return observableThrowError(error.message || error);
   }
 
 }
