@@ -68,7 +68,8 @@
     "@angular/forms": "^6.1.1",
     "@angular/http": "^6.1.1",
     "ngx-base": "^3.0.0",
-    "ngx-login-client": "^1.2.0"
+    "ngx-login-client": "^1.2.0",
+    "rxjs": "^6.2.2"
   },
   "devDependencies": {
     "@angular/common": "6.1.1",
