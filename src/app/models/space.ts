@@ -29,7 +29,7 @@ export class SpaceRelationships {
     workitemtypegroups: SpaceRelatedLink;
     workitemtypes?: SpaceRelatedLink;
     // this change breaks in fabric8-ui, fix it there to include this.
-    //collaborators: SpaceRelatedLink;
+    // collaborators: SpaceRelatedLink;
     'owned-by': {
       data: {
         id: string;
@@ -45,7 +45,7 @@ export class SpaceRelationships {
         related?: string;
         self?: string;
       }
-    }
+    };
 }
 
 export class SpaceRelatedLink {

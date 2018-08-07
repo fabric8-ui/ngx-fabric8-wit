@@ -59,13 +59,15 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
       .distinctUntilChanged()
       .takeUntil(changed$)
       .map(() => {
-        if (!control.value || control.value.toString().length > ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH) {
+        if (!control.value ||
+            control.value.toString().length > ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH) {
           return {
             maxLength: {
               valid: false,
               requestedName: control.value,
               max: ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH,
-              message: `Space Name cannot be more than ${ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH} characters long`
+              message: `Space Name cannot be more than ${ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH}
+                characters long`
             }
           };
         }
@@ -76,7 +78,8 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
               valid: false,
               requestedName: control.value,
               min: ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH,
-              message: `Space Name must be at least ${ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH} characters long.`
+              message: `Space Name must be at least ${ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH}
+                characters long.`
             }
           };
         } else if (!strVal.match(ALLOWED_SPACE_NAMES)) {
