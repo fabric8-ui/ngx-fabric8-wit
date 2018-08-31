@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import {
   HttpHeaders,
-  HttpClient,
+  HttpClient
 } from '@angular/common/http';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from 'rxjs';
 import {
   catchError,
-  map,
+  map
 } from 'rxjs/operators';
 
 import { Logger } from 'ngx-base';
@@ -21,10 +21,10 @@ import { WIT_API_URL } from '../api/wit-api';
 @Injectable()
 export class CollaboratorService {
 
+  spacesUrl: string;
+
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   private nextLink: string;
-
-  spacesUrl: string;
 
   constructor(
     private http: HttpClient,

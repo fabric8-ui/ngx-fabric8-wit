@@ -1,6 +1,6 @@
 import {
   HttpClient,
-  HttpErrorResponse,
+  HttpErrorResponse
 } from '@angular/common/http';
 import {
   HttpClientTestingModule,
@@ -11,7 +11,7 @@ import { TestBed } from '@angular/core/testing';
 import { AuthenticationService, UserService, AUTH_API_URL } from 'ngx-login-client';
 import { Broadcaster, Logger } from 'ngx-base';
 
-import { WIT_API_URL } from "../api/wit-api";
+import { WIT_API_URL } from '../api/wit-api';
 import { Area } from '../models/area';
 import { AreaService } from './area.service';
 
@@ -48,7 +48,7 @@ describe('Service: AreaService', () => {
         AreaService,
         {
           provide: WIT_API_URL,
-          useValue: "http://example.com/"
+          useValue: 'http://example.com/'
         },
         {
           provide: AUTH_API_URL,
@@ -87,7 +87,7 @@ describe('Service: AreaService', () => {
       'links': null,
       'relationships': null,
       'id': '1',
-      'type': 'areas',
+      'type': 'areas'
     }
   ];
   let responseA = { data: responseDataA, links: {} };
@@ -103,7 +103,7 @@ describe('Service: AreaService', () => {
     'links': null,
     'relationships': null,
     'id': '1',
-    'type': 'areas',
+    'type': 'areas'
   };
   let response = { data: responseData, links: {} };
 

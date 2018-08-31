@@ -84,17 +84,18 @@ export function uniqueSpaceNameValidator(
                         valid: false,
                         existingSpace: val,
                         requestedName: control.value,
-                        message: `The Space Name ${control.value} is already in use as ${val.relationalData.creator.attributes.username}/${val.attributes.name}`
+                        message: `The Space Name ${control.value} is already in use as ${val.relationalData.creator.attributes.username
+                          }/${val.attributes.name}`
                       }
                     };
                   }),
                   catchError(() => {
                     return observableOf(null);
                   })
-                )
+                );
           })
         )),
         first()
-      )
+      );
   };
 }

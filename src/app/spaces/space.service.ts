@@ -3,7 +3,7 @@ import {
   HttpHeaders,
   HttpClient,
   HttpParams,
-  HttpResponse,
+  HttpResponse
 } from '@angular/common/http';
 
 import {
@@ -72,7 +72,7 @@ export class SpaceService {
         map((response: any): Space => response.data),
         switchMap((space: Space): Observable<Space> => this.resolveOwner(space)),
         catchError((error: any): Observable<Space> => this.handleError(error))
-      )
+      );
   }
 
   getSpacesDelegate(url: string, isAll: boolean, params?: HttpParams): Observable<Space[]> {
@@ -102,7 +102,7 @@ export class SpaceService {
         }),
         flatMap((spaces: Space[]): Observable<Space[]> => this.resolveOwners(spaces)),
         catchError((error: any): Observable<Space[]> => this.handleError(error))
-      )
+      );
   }
 
   create(space: Space): Observable<Space> {
@@ -113,7 +113,7 @@ export class SpaceService {
         map((response: any): Space => response.data),
         switchMap((val: Space): Observable<Space> => this.resolveOwner(val)),
         catchError((error: any): Observable<Space> => this.handleError(error))
-      )
+      );
   }
 
   update(space: Space): Observable<Space> {
@@ -124,7 +124,7 @@ export class SpaceService {
         map((response: any): Space => response.data),
         switchMap((val: Space): Observable<Space> => this.resolveOwner(val)),
         catchError((error: any): Observable<Space> => this.handleError(error))
-      )
+      );
   }
 
   deleteSpace(space: Space, skipCluster: boolean = false): Observable<Space> {
@@ -134,7 +134,7 @@ export class SpaceService {
       .pipe(
         map(() => {}),
         catchError((error: any): Observable<any> => this.handleError(error))
-      )
+      );
   }
 
   search(searchText: string, pageSize: number = 20, pageNumber: number = 0): Observable<Space[]> {
@@ -241,7 +241,7 @@ export class SpaceService {
           });
           return spaces;
         })
-      )
+      );
   }
 
 }

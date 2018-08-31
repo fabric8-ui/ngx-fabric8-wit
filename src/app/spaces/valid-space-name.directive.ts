@@ -101,6 +101,6 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
           return null;
         }),
         first()
-      )
+      );
   };
 }
