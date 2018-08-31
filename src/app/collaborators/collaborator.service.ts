@@ -1,8 +1,17 @@
 import { Injectable, Inject } from '@angular/core';
-import { Headers, Http, URLSearchParams, Response } from '@angular/http';
+import {
+  HttpHeaders,
+  HttpClient,
+} from '@angular/common/http';
 
-import {Observable, throwError as observableThrowError} from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {
+  Observable,
+  throwError as observableThrowError
+} from 'rxjs';
+import {
+  catchError,
+  map,
+} from 'rxjs/operators';
 
 import { Logger } from 'ngx-base';
 import { AuthenticationService, User } from 'ngx-login-client';
@@ -12,82 +21,87 @@ import { WIT_API_URL } from '../api/wit-api';
 @Injectable()
 export class CollaboratorService {
 
-  private headers = new Headers({ 'Content-Type': 'application/json' });
-  private spacesUrl: string;
+  private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   private nextLink: string;
 
+  spacesUrl: string;
+
   constructor(
-    private http: Http,
+    private http: HttpClient,
     private logger: Logger,
     private auth: AuthenticationService,
     @Inject(WIT_API_URL) apiUrl: string) {
     if (this.auth.getToken() != null) {
-      this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
+      this.headers.append('Authorization', 'Bearer ' + this.auth.getToken());
     }
     this.spacesUrl = apiUrl + 'spaces';
   }
 
   getInitialBySpaceId(spaceId: string, pageSize: number = 20): Observable<User[]> {
     let url = this.spacesUrl + '/' + spaceId + '/collaborators' + '?page[limit]=' + pageSize;
-    return this.http
-      .get(url, { headers: this.headers })
-      .map(response => {
+    return this.http.get<User[]>(url, { headers: this.headers })
+      .pipe(
+        map((response: any) => {
 
-        let links = response.json().links;
-        if (links.hasOwnProperty('next')) {
-          this.nextLink = links.next;
-        } else {
-          this.nextLink = null;
-        }
-
-        let collaborators: User[] = response.json().data as User[];
-        return collaborators;
-      })
-      .catch((error) => {
-        return this.handleError(error);
-      });
-  }
-
-  getNextCollaborators(): Observable<User[]> {
-    if (this.nextLink) {
-      return this.http
-        .get(this.nextLink, { headers: this.headers })
-        .map(response => {
-          let links = response.json().links;
+          let links = response.links;
           if (links.hasOwnProperty('next')) {
             this.nextLink = links.next;
           } else {
             this.nextLink = null;
           }
 
-          let collaborators: User[] = response.json().data as User[];
+          let collaborators: User[] = response.data as User[];
           return collaborators;
-        })
-        .catch((error) => {
+        }),
+        catchError((error) => {
           return this.handleError(error);
-        });
+        })
+      );
+  }
+
+  getNextCollaborators(): Observable<User[]> {
+    if (this.nextLink) {
+      return this.http.get<User[]>(this.nextLink, { headers: this.headers })
+        .pipe(
+          map((response: any) => {
+            let links = response.data.links;
+            if (links.hasOwnProperty('next')) {
+              this.nextLink = links.next;
+            } else {
+              this.nextLink = null;
+            }
+
+            let collaborators: User[] = response.data as User[];
+            return collaborators;
+          }),
+          catchError((error) => {
+            return this.handleError(error);
+          })
+        );
     } else {
       return observableThrowError('No more collaborators found');
     }
   }
 
-  addCollaborators(spaceId: string, users: User[]): Observable<Response> {
+  addCollaborators(spaceId: string, users: User[]): Observable<User[]> {
     let url = this.spacesUrl + '/' + spaceId + '/collaborators';
     let payload = JSON.stringify({ data: users });
-    return this.http
-      .post(url, payload, { headers: this.headers }).pipe(
-      catchError((error) => {
-        return this.handleError(error);
-      }));
+    return this.http.post<User[]>(url, payload, { headers: this.headers })
+      .pipe(
+        catchError((error) => {
+          return this.handleError(error);
+        })
+      );
   }
 
-  removeCollaborator(spaceId: string, collaboratorId: string): Observable<void> {
+  removeCollaborator(spaceId: string, collaboratorId: string): Observable<{}> {
     let url = this.spacesUrl + '/' + spaceId + '/collaborators/' + collaboratorId;
-    return this.http
-      .delete(url, { headers: this.headers }).pipe(
-      catchError((error) => {
-        return this.handleError(error);
-      }));
+    return this.http.delete(url, { headers: this.headers })
+      .pipe(
+        catchError((error) => {
+          return this.handleError(error);
+        })
+      );
   }
 
   private handleError(error: any) {

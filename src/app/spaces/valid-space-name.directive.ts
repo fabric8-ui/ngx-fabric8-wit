@@ -1,4 +1,3 @@
-import { Observable, Subject } from 'rxjs';
 import { SimpleChanges, OnChanges, Directive, Input, forwardRef } from '@angular/core';
 import {
   AbstractControl,
@@ -8,8 +7,14 @@ import {
   AsyncValidatorFn
 } from '@angular/forms';
 
-import 'rxjs/operators/first';
-import 'rxjs/operators/takeUntil';
+import { Observable, Subject } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  first,
+  map,
+  takeUntil
+} from 'rxjs/operators';
 
 @Directive({
   selector: '[validSpaceName][ngModel]',
@@ -55,47 +60,47 @@ export function validSpaceNameValidator(): AsyncValidatorFn {
   return (control: AbstractControl): Observable<{ [key: string]: any }> => {
     changed$.next();
     return control.valueChanges
-      .debounceTime(50)
-      .distinctUntilChanged()
-      .takeUntil(changed$)
-      .map(() => {
-        if (!control.value ||
-            control.value.toString().length > ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH) {
-          return {
-            maxLength: {
-              valid: false,
-              requestedName: control.value,
-              max: ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH,
-              message: `Space Name cannot be more than ${ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH}
-                characters long`
-            }
-          };
-        }
-        let strVal: string = control.value.toString();
-        if (strVal.length < ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH) {
-          return {
-            minLength: {
-              valid: false,
-              requestedName: control.value,
-              min: ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH,
-              message: `Space Name must be at least ${ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH}
-                characters long.`
-            }
-          };
-        } else if (!strVal.match(ALLOWED_SPACE_NAMES)) {
-          return {
-            invalid: {
-              valid: false,
-              requestedName: control.value,
-              allowedChars: ALLOWED_SPACE_NAMES,
-              message:
-                'Space Name must contain only letters, numbers, underscores (_) ' +
-                'or hyphens (-). It cannot start or end with an underscore or a hyphen'
-            }
-          };
-        }
-        return null;
-      })
-      .first();
+      .pipe(
+        debounceTime(50),
+        distinctUntilChanged(),
+        takeUntil(changed$),
+        map(() => {
+          if (!control.value ||
+              control.value.toString().length > ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH) {
+            return {
+              maxLength: {
+                valid: false,
+                requestedName: control.value,
+                max: ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH,
+                message: `Space Name cannot be more than ${ValidSpaceNameValidatorDirective.MAX_SPACE_NAME_LENGTH} characters long`
+              }
+            };
+          }
+          let strVal: string = control.value.toString();
+          if (strVal.length < ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH) {
+            return {
+              minLength: {
+                valid: false,
+                requestedName: control.value,
+                min: ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH,
+                message: `Space Name must be at least ${ValidSpaceNameValidatorDirective.MIN_SPACE_NAME_LENGTH} characters long.`
+              }
+            };
+          } else if (!strVal.match(ALLOWED_SPACE_NAMES)) {
+            return {
+              invalid: {
+                valid: false,
+                requestedName: control.value,
+                allowedChars: ALLOWED_SPACE_NAMES,
+                message:
+                  'Space Name must contain only letters, numbers, underscores (_) ' +
+                  'or hyphens (-). It cannot start or end with an underscore or a hyphen'
+              }
+            };
+          }
+          return null;
+        }),
+        first()
+      )
   };
 }

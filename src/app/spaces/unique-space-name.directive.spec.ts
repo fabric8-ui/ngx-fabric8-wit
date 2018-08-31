@@ -1,12 +1,12 @@
 import { async, TestBed } from '@angular/core/testing';
-import { UniqueSpaceNameValidatorDirective } from './unique-space-name.directive';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { SpaceService } from './space.service';
 import { UserService } from 'ngx-login-client';
-import { Space } from '../models/space';
 import { Observable, ConnectableObservable } from 'rxjs';
+import { SpaceService } from './space.service';
+import { UniqueSpaceNameValidatorDirective } from './unique-space-name.directive';
+import { Space } from '../models/space';
 
 @Component({
   template: `
@@ -120,7 +120,7 @@ describe('Directive for Name Space', () => {
         expect(control.hasError('unique')).toBe(true);
         expect(control.errors.unique.valid).toBeFalsy();
         expect(control.errors.unique.existingSpace.name).toEqual('TestSpace');
-        let expectedMessage = 'The Space Name TestSpace  is already in use as name/TestSpace';
+        let expectedMessage = 'The Space Name TestSpace is already in use as name/TestSpace';
         expect(control.errors.unique.message).toEqual(expectedMessage);
       });
    });
