@@ -2,8 +2,15 @@ import { async, TestBed } from '@angular/core/testing';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import {
+  empty as emptyObservable,
+  Observable,
+  of as observableOf,
+  throwError as observableThrowError
+} from 'rxjs';
+
 import { UserService } from 'ngx-login-client';
-import { Observable, ConnectableObservable } from 'rxjs';
+
 import { SpaceService } from './space.service';
 import { UniqueSpaceNameValidatorDirective } from './unique-space-name.directive';
 import { Space } from '../models/space';
@@ -100,8 +107,8 @@ describe('Directive for Name Space', () => {
       'type': 'userType'
     };
     let fixture = TestBed.createComponent(TestSpaceNameComponent);
-    userServiceSpy.loggedInUser = ConnectableObservable.of(user);
-    spaceServiceSpy.getSpaceByName.and.returnValue(Observable.of(space));
+    userServiceSpy.loggedInUser = observableOf(user);
+    spaceServiceSpy.getSpaceByName.and.returnValue(observableOf(space));
 
 
     let debug = fixture.debugElement;
