@@ -7,10 +7,22 @@ import {
   AsyncValidatorFn
 } from '@angular/forms';
 
-import { Observable, of as observableOf, Subject } from 'rxjs';
-import { first, switchMap, takeUntil } from 'rxjs/operators';
+import {
+  Observable,
+  of as observableOf,
+  Subject
+} from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  first,
+  map,
+  catchError,
+  switchMap,
+  takeUntil
+} from 'rxjs/operators';
 
-import { UserService } from 'ngx-login-client';
+import { User, UserService } from 'ngx-login-client';
 
 import { SpaceService } from './space.service';
 
@@ -56,28 +68,33 @@ export function uniqueSpaceNameValidator(
   return (control: AbstractControl): Observable<{ [key: string]: any }> => {
     changed$.next();
     return control.valueChanges
-      .debounceTime(200)
-      .distinctUntilChanged()
-      .takeUntil(changed$)
-      .switchMap(() => userService.loggedInUser.pipe(
-        switchMap(user => {
-          return spaceService
-            .getSpaceByName(user.attributes.username, control.value ? control.value.replace(' ', '_') : control.value)
-            .map(val => {
-              return {
-                unique: {
-                  valid: false,
-                  existingSpace: val,
-                  requestedName: control.value,
-                  message: `The Space Name ${control.value} is already in use as
-                    ${val.relationalData.creator.attributes.username}/${val.attributes.name}`
-                }
-              };
-            })
-            .catch(() => {
-              return observableOf(null);
-            });
-        })))
-      .first();
+      .pipe(
+        debounceTime(200),
+        distinctUntilChanged(),
+        takeUntil(changed$),
+        switchMap(() => userService.loggedInUser.pipe(
+          switchMap((user: User) => {
+            return spaceService
+              .getSpaceByName(user.attributes.username,
+                control.value ? control.value.replace(' ', '_') : control.value)
+                .pipe(
+                  map(val => {
+                    return {
+                      unique: {
+                        valid: false,
+                        existingSpace: val,
+                        requestedName: control.value,
+                        message: `The Space Name ${control.value} is already in use as ${val.relationalData.creator.attributes.username}/${val.attributes.name}`
+                      }
+                    };
+                  }),
+                  catchError(() => {
+                    return observableOf(null);
+                  })
+                )
+          })
+        )),
+        first()
+      )
   };
 }
