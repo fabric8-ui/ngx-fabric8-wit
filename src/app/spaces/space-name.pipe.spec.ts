@@ -1,6 +1,6 @@
 import { async, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { SpaceNamePipe } from './space-name.pipe'
+import { SpaceNamePipe } from './space-name.pipe';
 
 describe('Pipe used for Name Space', () => {
 

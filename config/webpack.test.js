@@ -12,8 +12,7 @@ const stringify = require('json-stringify');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
-const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
-// const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 /**
  * Webpack Constants
@@ -23,11 +22,6 @@ const API_URL = process.env.API_URL || (ENV === 'inmemory'?'app/':'http://localh
 const FABRIC8_WIT_API_URL = process.env.FABRIC8_WIT_API_URL;
 const FABRIC8_RECOMMENDER_API_URL = process.env.FABRIC8_RECOMMENDER_API_URL || 'http://api-bayesian.dev.rdu2c.fabric8.io/api/v1/';
 
-/**
- * Webpack configuration
- *
- * See: http://webpack.github.io/docs/configuration.html#cli
- */
 module.exports = function () {
   return {
     /**
@@ -55,7 +49,9 @@ module.exports = function () {
     devtool: 'inline-source-map',
 
     entry: {
-      'app': './index.ts'
+      'polyfills': './src/polyfills.ts',
+      'vendor': './src/vendor.ts',
+      'app': './src/main.ts'
     },
 
     /**
@@ -125,7 +121,12 @@ module.exports = function () {
         {
           test: /\.ts$/,
           use: [
-            'ts-loader',
+            {
+              loader: 'ts-loader',
+              options: {
+                configFile: 'tsconfig-test.json'
+              }
+            },
             'angular2-template-loader'
           ],
           exclude: [/\.e2e\.ts$/]
@@ -143,6 +144,75 @@ module.exports = function () {
           exclude: [helpers.root('src/index.html')]
         },
 
+        /**
+         * HTML Linter
+         * Checks all files against .htmlhintrc
+         */
+        {
+          enforce: 'pre',
+          test: /\.html$/,
+          use: {
+            loader: 'htmlhint-loader',
+            options: {
+              configFile: './.htmlhintrc'
+            }
+          },
+          exclude: [/node_modules/]
+        },
+
+        /**
+         * Raw loader support for *.html
+         * Returns file content as string
+         *
+         * See: https://github.com/webpack/raw-loader
+         */
+        {
+          test: /\.html$/,
+          use: ['html-loader']
+        },
+
+        /**
+         * to string and css loader support for *.css files
+         * Returns file content as string
+         *
+         */
+        {
+          test: /\.css$/,
+          use:
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+              }
+            }
+        },
+        {
+          test: /\.less$/,
+          use: [
+            {
+              loader: 'css-to-string-loader'
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                context: '/'
+              }
+            },
+            {
+              loader: 'less-loader',
+              options: {
+                paths: [
+                  path.resolve(__dirname, "../node_modules/patternfly/dist/less"),
+                  path.resolve(__dirname, "../node_modules/patternfly/dist/less/dependencies"),
+                  path.resolve(__dirname, "../node_modules/patternfly/dist/less/dependencies/bootstrap"),
+                  path.resolve(__dirname, "../node_modules/patternfly/dist/less/dependencies/font-awesome"),
+                ],
+                sourceMap: true
+              }
+            }
+          ]
+        },
 
         /**
          *  File loader for supporting fonts, for example, in CSS files.
@@ -154,21 +224,23 @@ module.exports = function () {
               loader: "url-loader",
               options: {
                 limit: 3000,
-                name: 'vendor/fonts/[name].[hash].[ext]'
+                includePaths: [
+                  path.resolve(__dirname, "../node_modules/patternfly/dist/fonts/")
+                ],
+                name: 'assets/fonts/[name].[hash].[ext]'
               }
             }
           ]
         }, {
           test: /\.jpg$|\.png$|\.gif$|\.jpeg$/,
-          use: [
-            {
-              loader: "url-loader",
-              options: {
-                limit: 3000,
-                name: 'vendor/images/[name].[hash].[ext]'
-              }
+          use: {
+            loader: "url-loader",
+            options: {
+              limit: 3000,
+              name: 'assets/fonts/[name].[hash].[ext]'
             }
-          ]
+          },
+          exclude: path.resolve(__dirname, "../node_modules/patternfly/dist/fonts/")
         },
 
         /**
@@ -188,7 +260,7 @@ module.exports = function () {
           },
           include: helpers.root('src'),
           exclude: [
-            /\.(e2e|spec|mock)\.ts$/,
+            /\.(e2e|spec)\.ts$/,
             /node_modules/
           ]
         }
@@ -241,13 +313,27 @@ module.exports = function () {
         helpers.root('src') // location of your src
       ),
 
+      new HtmlWebpackPlugin(),
+
       // Reference: https://github.com/johnagan/clean-webpack-plugin
       // Removes the bundle folder before the build
       new CleanWebpackPlugin(['bundles'], {
         root: helpers.root(),
         verbose: false,
         dry: false
-      })
+      }),
+
+      /*
+       * StyleLintPlugin
+       */
+      new StyleLintPlugin({
+        configFile: '.stylelintrc',
+        syntax: 'less',
+        context: 'src',
+        files: '**/*.less',
+        failOnError: true,
+        quiet: false,
+      }),
     ],
 
     /**

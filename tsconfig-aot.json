@@ -1,6 +1,6 @@
 {
   "angularCompilerOptions": {
-    "genDir": "compiled",
+    "genDir": "build-aot/codegen",
     "skipTemplateCodegen": true,
     "strictMetadataEmit": true
   },
@@ -9,6 +9,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
     "baseUrl": ".",
     "declaration": true,
     "emitDecoratorMetadata": true,
@@ -19,7 +20,10 @@
     "moduleResolution": "node",
     "noEmitHelpers": false, // Planner and demo won't run when true
     "noImplicitAny": true,
-    "outDir": "dist",
+    "noStrictGenericChecks": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "outDir": "build-aot",
     "paths": {
       "@angular/core": ["node_modules/@angular/core"],
       "@angular/http": ["node_modules/@angular/http"],
@@ -35,6 +39,10 @@
     "stripInternal": true,
     "target": "es5"
   },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
   "files": [
     "build/src/app/index.ts"
   ]

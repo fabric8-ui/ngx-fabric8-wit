@@ -1,6 +1,6 @@
 import {
   HttpClient,
-  HttpErrorResponse,
+  HttpErrorResponse
 } from '@angular/common/http';
 import {
   HttpClientTestingModule,
@@ -486,54 +486,3 @@ describe('Service: SpaceService', () => {
 
 });
 
-let getreal = {
-  "data": {
-    "attributes": {
-      "created-at": "2018-06-25T14:50:58.057465Z",
-      "description": "The Agile Scrum working space for the OpenShift.io team.",
-      "name": "Openshift_io",
-      "updated-at": "2018-07-16T12:37:57.196893Z",
-      "version": 1
-    },
-    "id": "e8864cfe-f65a-4351-85a4-3a585d801b45",
-    "links": {
-      "backlog": {
-        "meta": {"totalCount": 200},
-        "self": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/backlog"
-      },
-      "filters": "https://openshift.io/api/filters",
-      "related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45",
-      "self": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45",
-      "workitemlinktypes": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418/workitemlinktypes",
-      "workitemtypes": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418/workitemtypes"
-    },
-    "relationships": {
-      "areas": {"links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/areas"}},
-      "backlog": {
-        "links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/backlog"},
-        "meta": {"totalCount": 200}
-      },
-      "codebases": {"links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/codebases"}},
-      "collaborators": {"links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/collaborators"}},
-      "filters": {"links": {"related": "https://openshift.io/api/filters"}},
-      "iterations": {"links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/iterations"}},
-      "labels": {"links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/labels"}},
-      "owned-by": {
-        "data": {"id": "7b50ddb4-5e12-4031-bca7-3b88f92e2339", "type": "identities"},
-        "links": {"related": "https://openshift.io/api/users/7b50ddb4-5e12-4031-bca7-3b88f92e2339"}
-      },
-      "space-template": {
-        "data": {"id": "f405fa41-a8bb-46db-8800-2dbe13da1418", "type": "spacetemplates"},
-        "links": {
-          "related": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418",
-          "self": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418"
-        }
-      },
-      "workitemlinktypes": {"links": {"related": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418/workitemlinktypes"}},
-      "workitems": {"links": {"related": "https://openshift.io/api/spaces/e8864cfe-f65a-4351-85a4-3a585d801b45/workitems"}},
-      "workitemtypegroups": {"links": {"related": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418/workitemtypegroups"}},
-      "workitemtypes": {"links": {"related": "https://openshift.io/api/spacetemplates/f405fa41-a8bb-46db-8800-2dbe13da1418/workitemtypes"}}
-    },
-    "type": "spaces"
-  }
-};

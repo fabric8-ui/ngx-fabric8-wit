@@ -3,7 +3,7 @@ import {
   HttpHeaders,
   HttpClient,
   HttpParams,
-  HttpResponse,
+  HttpResponse
 } from '@angular/common/http';
 
 import {
@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import {
   catchError,
-  map,
+  map
 } from 'rxjs/operators';
 
 import { AuthenticationService } from 'ngx-login-client';
@@ -24,10 +24,10 @@ import { Area } from '../models/area';
 @Injectable()
 export class AreaService {
 
-  private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
   spacesUrl: string;
   areasUrl: string;
+
+  private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   constructor(
     private http: HttpClient,
