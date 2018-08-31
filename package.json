@@ -168,7 +168,7 @@
     "reflect-metadata": "0.1.12",
     "resolve-url-loader": "2.3.0",
     "rimraf": "2.6.2",
-    "rollup": "0.64.0",
+    "rollup": "0.65.0",
     "rollup-plugin-angular-aot": "0.0.4",
     "run-sequence": "2.2.1",
     "rxjs": "6.2.2",
