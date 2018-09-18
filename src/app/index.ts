@@ -24,6 +24,7 @@ export { Spaces } from './spaces/spaces';
 export { UniqueSpaceNameValidatorDirective} from './spaces/unique-space-name.directive';
 export { ValidSpaceNameValidatorDirective } from './spaces/valid-space-name.directive';
 export { SpaceNamePipe } from './spaces/space-name.pipe';
+export { SpaceNameModule } from './spaces/space-name-module';
 
 // Areas
 export {
