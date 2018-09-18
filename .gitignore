@@ -68,3 +68,6 @@ npm-debug.log
 *.ngsummary.json
 
 package-lock.json
+
+build
+build-aot
