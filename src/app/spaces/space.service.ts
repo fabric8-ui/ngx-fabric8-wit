@@ -86,19 +86,19 @@ export class SpaceService {
           // and set the nextLink, if server indicates more resources
           // in paginated collection through a 'next' link.
           const links: any = response.data.links;
-          if (links.hasOwnProperty('next')) {
+          if (links && links.hasOwnProperty('next')) {
             this.nextLink = links.next;
           } else {
             this.nextLink = null;
           }
-          let meta = response.json().meta;
+          let meta = response.meta;
           if (meta && meta.hasOwnProperty('totalCount')) {
             this.totalCount = meta.totalCount;
           } else {
             this.totalCount = -1;
           }
           // Extract data from JSON API response, and assert to an array of spaces.
-          return response.json().data as Space[];
+          return response.data as Space[];
         }),
         flatMap((spaces: Space[]): Observable<Space[]> => this.resolveOwners(spaces)),
         catchError((error: any): Observable<Space[]> => this.handleError(error))
