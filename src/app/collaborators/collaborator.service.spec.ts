@@ -13,6 +13,7 @@ import { Broadcaster, Logger } from 'ngx-base';
 
 import { WIT_API_URL } from '../api/wit-api';
 import { CollaboratorService } from './collaborator.service';
+import { concatMap } from 'rxjs/operators';
 
 describe('Service: CollaboratorService', () => {
 
@@ -86,7 +87,19 @@ describe('Service: CollaboratorService', () => {
       'type': 'identities'
     }
   ];
-  let response = { data: responseData, links: {} };
+  let response = { data: responseData, links: {}, meta: { totalCount: 3 } };
+
+  describe('#getTotalCount', () => {
+    it('should default to -1', () => {
+      collaboratorService.getTotalCount()
+        .subscribe(
+          (count: number): void => {
+            expect(count).toEqual(-1);
+          },
+          fail
+        );
+    });
+  });
 
   describe('#getInitialBySpaceId', () => {
     it('should get collaborators by Space ID', (done: DoneFn) => {
@@ -96,6 +109,28 @@ describe('Service: CollaboratorService', () => {
           // then
           expect(data[0].id).toEqual(responseData[0].id);
           expect(data[0].attributes.username).toEqual(responseData[0].attributes.username);
+        },
+        fail
+      );
+      // CollaboratorService should have made one request to GET collaborators from expected URL
+      const req = httpTestingController.expectOne(collaboratorService.spacesUrl + '/1/collaborators?page[limit]=20');
+      expect(req.request.method).toEqual('GET');
+
+      // Respond with the mock collaborator
+      req.flush(response);
+      httpTestingController.verify();
+      done();
+    });
+
+    it('should update totalCount', (done: DoneFn) => {
+      // when
+      collaboratorService.getInitialBySpaceId('1')
+        .pipe(
+          concatMap(() => collaboratorService.getTotalCount())
+        )
+        .subscribe((count: number): void => {
+          // then
+          expect(count).toEqual(3);
         },
         fail
       );

@@ -6,7 +6,8 @@ import {
 
 import {
   Observable,
-  throwError as observableThrowError
+  throwError as observableThrowError,
+  of
 } from 'rxjs';
 import {
   catchError,
@@ -25,6 +26,7 @@ export class CollaboratorService {
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   private nextLink: string;
+  private totalCount: number = -1;
 
   constructor(
     private http: HttpClient,
@@ -48,6 +50,11 @@ export class CollaboratorService {
             this.nextLink = links.next;
           } else {
             this.nextLink = null;
+          }
+          if (response.meta && response.meta.hasOwnProperty('totalCount')) {
+            this.totalCount = response.meta.totalCount;
+          } else {
+            this.totalCount = -1;
           }
 
           let collaborators: User[] = response.data as User[];
@@ -102,6 +109,10 @@ export class CollaboratorService {
           return this.handleError(error);
         })
       );
+  }
+
+  getTotalCount(): Observable<number> {
+    return of(this.totalCount);
   }
 
   private handleError(error: any) {
