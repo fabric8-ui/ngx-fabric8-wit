@@ -71,7 +71,7 @@ export class CollaboratorService {
       return this.http.get<User[]>(this.nextLink, { headers: this.headers })
         .pipe(
           map((response: any) => {
-            let links = response.data.links;
+            let links = response.links;
             if (links.hasOwnProperty('next')) {
               this.nextLink = links.next;
             } else {

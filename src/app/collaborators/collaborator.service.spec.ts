@@ -87,7 +87,7 @@ describe('Service: CollaboratorService', () => {
       'type': 'identities'
     }
   ];
-  let response = { data: responseData, links: {}, meta: { totalCount: 3 } };
+  let response = { data: responseData, links: { next: 'http://example.com/nextlink' }, meta: { totalCount: 3 } };
 
   describe('#getTotalCount', () => {
     it('should default to -1', () => {
@@ -233,6 +233,31 @@ describe('Service: CollaboratorService', () => {
       req.flush(response);
       httpTestingController.verify();
       done();
+    });
+  });
+
+  describe('next links', () => {
+    it('should follow pagination "next" links', (done: DoneFn) => {
+      collaboratorService.getInitialBySpaceId('1')
+        .subscribe(() => {
+          httpTestingController.verify();
+
+          collaboratorService.getNextCollaborators()
+            .subscribe(() => {
+              httpTestingController.verify();
+              done();
+            },
+            fail
+          );
+          const req2 = httpTestingController.expectOne(response.links.next);
+          expect(req2.request.method).toEqual('GET');
+          req2.flush(response);
+        },
+        fail
+      );
+      const req = httpTestingController.expectOne(collaboratorService.spacesUrl + '/1/collaborators?page[limit]=20');
+      expect(req.request.method).toEqual('GET');
+      req.flush(response);
     });
   });
 });
