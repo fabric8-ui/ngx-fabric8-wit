@@ -1,9 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import {
   HttpHeaders,
-  HttpClient,
-  HttpParams,
-  HttpResponse
+  HttpClient
 } from '@angular/common/http';
 
 import {
@@ -15,7 +13,6 @@ import {
   map
 } from 'rxjs/operators';
 
-import { AuthenticationService } from 'ngx-login-client';
 import { Logger } from 'ngx-base';
 
 import { WIT_API_URL } from '../api/wit-api';
@@ -32,11 +29,7 @@ export class AreaService {
   constructor(
     private http: HttpClient,
     private logger: Logger,
-    private auth: AuthenticationService,
     @Inject(WIT_API_URL) apiUrl: string) {
-    if (this.auth.getToken() != null) {
-      this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
-    }
     this.spacesUrl = apiUrl + 'spaces';
     this.areasUrl = apiUrl + 'areas';
   }
