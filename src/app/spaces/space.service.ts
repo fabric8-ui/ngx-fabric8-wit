@@ -137,9 +137,9 @@ export class SpaceService {
     if (searchText === '') {
       searchText = '*';
     }
-    const params: HttpParams = new HttpParams().set('q', searchText);
-    params.append('page[offset]', (pageSize * pageNumber).toString());
-    params.append('page[limit]', pageSize.toString());
+    const params: HttpParams = new HttpParams().set('q', searchText)
+      .append('page[offset]', (pageSize * pageNumber).toString())
+      .append('page[limit]', pageSize.toString());
 
     return this.getSpacesDelegate(url, false, params);
   }
