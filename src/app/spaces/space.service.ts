@@ -136,7 +136,7 @@ export class SpaceService {
       );
   }
 
-  deleteSpace(space: Space, skipCluster: boolean = false): Observable<Space> {
+  delete(space: Space, skipCluster: boolean = false): Observable<Space> {
     if (!space) {
       return observableThrowError('Space cannot be undefined');
     }
