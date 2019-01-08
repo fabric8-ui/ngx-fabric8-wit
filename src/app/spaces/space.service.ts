@@ -152,13 +152,27 @@ export class SpaceService {
     }
   }
 
-  // Currently serves to fetch the list of all spaces owned by a user.
+  /**
+   * @deprecated use SpaceService.getSpacesByName
+   */
   getSpacesByUser(userName: string, pageSize: number = 20): Observable<Space[]> {
+    return this.getSpacesByName(userName, pageSize);
+  }
+
+  // Currently serves to fetch the list of all spaces owned by a user.
+  getSpacesByName(userName: string, pageSize: number = 20): Observable<Space[]> {
     const url: string = `${this.namedSpacesUrl}/${encodeURIComponent(userName)}?page[limit]=${pageSize}`;
     return this.getSpacesDelegate(url, false);
   }
 
+  /**
+   * @deprecated use SpaceService.getMoreSpacesByName
+   */
   getMoreSpacesByUser(): Observable<Space[]> {
+    return this.getMoreSpacesByName();
+  }
+
+  getMoreSpacesByName(): Observable<Space[]> {
     if (this.nextLink) {
       return this.getSpacesDelegate(this.nextLink, false);
     } else {
