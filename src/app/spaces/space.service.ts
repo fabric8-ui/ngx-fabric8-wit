@@ -167,7 +167,7 @@ export class SpaceService {
   }
 
   getSpaceById(spaceId: string): Observable<Space> {
-    const url: string = `${this.spacesUrl}/${spaceId}`;
+    const url: string = `${this.spacesUrl}/${encodeURIComponent(spaceId)}`;
     return this.http.get<Space>(url, { headers: this.headers })
       .pipe(
         map((response: any): Space => response.data),
