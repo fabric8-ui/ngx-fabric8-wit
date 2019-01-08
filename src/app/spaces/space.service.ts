@@ -2,8 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import {
   HttpHeaders,
   HttpClient,
-  HttpParams,
-  HttpResponse
+  HttpParams
 } from '@angular/common/http';
 
 import {
@@ -23,7 +22,7 @@ import {
 } from 'rxjs/operators';
 
 import { Logger } from 'ngx-base';
-import { AuthenticationService, User, UserService } from 'ngx-login-client';
+import { User, UserService } from 'ngx-login-client';
 
 import { WIT_API_URL } from '../api/wit-api';
 import { Space } from '../models/space';
@@ -41,12 +40,8 @@ export class SpaceService {
   constructor(
     private readonly http: HttpClient,
     private readonly logger: Logger,
-    private readonly auth: AuthenticationService,
     private readonly userService: UserService,
     @Inject(WIT_API_URL) apiUrl: string) {
-    if (this.auth.getToken() != null) {
-      this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
-    }
     this.spacesUrl = apiUrl + 'spaces';
     this.namedSpacesUrl = apiUrl + 'namedspaces';
     this.searchSpacesUrl = apiUrl + 'search/spaces';
