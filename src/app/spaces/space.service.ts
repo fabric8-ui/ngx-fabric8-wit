@@ -51,12 +51,12 @@ export class SpaceService {
       return observableThrowError('Page limit cannot be less or equal 0');
     }
     const url: string = `${this.spacesUrl}?page[limit]=${pageSize}`;
-    return this.getSpacesDelegate(url, true);
+    return this.getSpacesDelegate(url);
   }
 
   getMoreSpaces(): Observable<Space[]> {
     if (this.nextLink) {
-      return this.getSpacesDelegate(this.nextLink, false);
+      return this.getSpacesDelegate(this.nextLink);
     } else {
       return observableThrowError('No more spaces found');
     }
@@ -75,36 +75,6 @@ export class SpaceService {
         map((response: any): Space => response.data),
         switchMap((space: Space): Observable<Space> => this.resolveOwner(space)),
         catchError((error: any): Observable<Space> => this.handleError(error))
-      );
-  }
-
-  getSpacesDelegate(url: string, isAll: boolean, params?: HttpParams): Observable<Space[]> {
-    // Set the GET options to include the search params if they are sent, if not then just the headers.
-    const options = params ? { headers: this.headers, params: params } : { headers: this.headers };
-
-    return this.http.get(url, options)
-      .pipe(
-        map((response: any): Space[] => {
-          // Extract links from JSON API response.
-          // and set the nextLink, if server indicates more resources
-          // in paginated collection through a 'next' link.
-          const links: any = response.links;
-          if (links && links.hasOwnProperty('next')) {
-            this.nextLink = links.next;
-          } else {
-            this.nextLink = null;
-          }
-          let meta = response.meta;
-          if (meta && meta.hasOwnProperty('totalCount')) {
-            this.totalCount = meta.totalCount;
-          } else {
-            this.totalCount = -1;
-          }
-          // Extract data from JSON API response, and assert to an array of spaces.
-          return response.data as Space[];
-        }),
-        flatMap((spaces: Space[]): Observable<Space[]> => this.resolveOwners(spaces)),
-        catchError((error: any): Observable<Space[]> => this.handleError(error))
       );
   }
 
@@ -167,12 +137,12 @@ export class SpaceService {
       .append('page[offset]', (pageSize * pageNumber).toString())
       .append('page[limit]', pageSize.toString());
 
-    return this.getSpacesDelegate(url, false, params);
+    return this.getSpacesDelegate(url, params);
   }
 
   getMoreSearchResults(): Observable<Space[]> {
     if (this.nextLink) {
-      return this.getSpacesDelegate(this.nextLink, false);
+      return this.getSpacesDelegate(this.nextLink);
     } else {
       return observableThrowError('No more spaces found');
     }
@@ -194,7 +164,7 @@ export class SpaceService {
       return observableThrowError('Page limit cannot be less or equal 0');
     }
     const url: string = `${this.namedSpacesUrl}/${encodeURIComponent(userName)}?page[limit]=${pageSize}`;
-    return this.getSpacesDelegate(url, false);
+    return this.getSpacesDelegate(url);
   }
 
   /**
@@ -206,7 +176,7 @@ export class SpaceService {
 
   getMoreSpacesByName(): Observable<Space[]> {
     if (this.nextLink) {
-      return this.getSpacesDelegate(this.nextLink, false);
+      return this.getSpacesDelegate(this.nextLink);
     } else {
       return observableThrowError('No more spaces found');
     }
@@ -229,6 +199,36 @@ export class SpaceService {
   // or if the previous query did not have the totalCount property.
   getTotalCount(): Observable<number> {
     return observableOf(this.totalCount);
+  }
+
+  private getSpacesDelegate(url: string, params?: HttpParams): Observable<Space[]> {
+    // Set the GET options to include the search params if they are sent, if not then just the headers.
+    const options = params ? { headers: this.headers, params: params } : { headers: this.headers };
+
+    return this.http.get(url, options)
+      .pipe(
+        map((response: any): Space[] => {
+          // Extract links from JSON API response.
+          // and set the nextLink, if server indicates more resources
+          // in paginated collection through a 'next' link.
+          const links: any = response.links;
+          if (links && links.hasOwnProperty('next')) {
+            this.nextLink = links.next;
+          } else {
+            this.nextLink = null;
+          }
+          let meta = response.meta;
+          if (meta && meta.hasOwnProperty('totalCount')) {
+            this.totalCount = meta.totalCount;
+          } else {
+            this.totalCount = -1;
+          }
+          // Extract data from JSON API response, and assert to an array of spaces.
+          return response.data as Space[];
+        }),
+        flatMap((spaces: Space[]): Observable<Space[]> => this.resolveOwners(spaces)),
+        catchError((error: any): Observable<Space[]> => this.handleError(error))
+      );
   }
 
   private handleError(error: any): Observable<any> {
