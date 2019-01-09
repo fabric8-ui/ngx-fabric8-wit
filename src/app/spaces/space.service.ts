@@ -89,7 +89,7 @@ export class SpaceService {
           // Extract links from JSON API response.
           // and set the nextLink, if server indicates more resources
           // in paginated collection through a 'next' link.
-          const links: any = response.data.links;
+          const links: any = response.links;
           if (links && links.hasOwnProperty('next')) {
             this.nextLink = links.next;
           } else {
