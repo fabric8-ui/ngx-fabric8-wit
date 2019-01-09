@@ -48,6 +48,9 @@ export class SpaceService {
   }
 
   getSpaces(pageSize: number = 20): Observable<Space[]> {
+    if (pageSize <= 0) {
+      return observableThrowError('Page limit cannot be less or equal 0');
+    }
     const url: string = `${this.spacesUrl}?page[limit]=${pageSize}`;
     return this.getSpacesDelegate(url, true);
   }
@@ -61,6 +64,12 @@ export class SpaceService {
   }
 
   getSpaceByName(userName: string, spaceName: string): Observable<Space> {
+    if (!userName) {
+      return observableThrowError('User name cannot be empty');
+    }
+    if (!spaceName) {
+      return observableThrowError('Space name cannot be empty');
+    }
     const url: string = `${this.namedSpacesUrl}/${encodeURIComponent(userName)}/${encodeURIComponent(spaceName)}`;
     return this.http.get<Space>(url, { headers: this.headers })
       .pipe(
@@ -101,6 +110,9 @@ export class SpaceService {
   }
 
   create(space: Space): Observable<Space> {
+    if (!space) {
+      return observableThrowError('Space cannot be undefined');
+    }
     const url: string = this.spacesUrl;
     const payload: string = JSON.stringify({ data: space });
     return this.http.post<Space>(url, payload, { headers: this.headers })
@@ -112,6 +124,9 @@ export class SpaceService {
   }
 
   update(space: Space): Observable<Space> {
+    if (!space) {
+      return observableThrowError('Space cannot be undefined');
+    }
     const url: string = `${this.spacesUrl}/${space.id}`;
     const payload: string = JSON.stringify({ data: space });
     return this.http.patch<Space>(url, payload, { headers: this.headers })
@@ -123,8 +138,11 @@ export class SpaceService {
   }
 
   deleteSpace(space: Space, skipCluster: boolean = false): Observable<Space> {
+    if (!space) {
+      return observableThrowError('Space cannot be undefined');
+    }
     const url: string = `${this.spacesUrl}/${space.id}`;
-    const options = {headers: this.headers, params: new HttpParams().set('skipCluster', skipCluster.toString()) };
+    const options = { headers: this.headers, params: new HttpParams().set('skipCluster', skipCluster.toString()) };
     return this.http.delete(url, options)
       .pipe(
         map(() => {}),
@@ -132,11 +150,20 @@ export class SpaceService {
       );
   }
 
-  search(searchText: string, pageSize: number = 20, pageNumber: number = 0): Observable<Space[]> {
-    const url: string = this.searchSpacesUrl;
+  search(searchText: string = '*', pageSize: number = 20, pageNumber: number = 0): Observable<Space[]> {
     if (searchText === '') {
       searchText = '*';
     }
+    if (!searchText) {
+      return observableThrowError('Search query cannot be undefined');
+    }
+    if (pageSize <= 0) {
+      return observableThrowError('Page limit cannot be less or equal 0');
+    }
+    if (pageNumber < 0) {
+      return observableThrowError('Page offset cannot be less than 0');
+    }
+    const url: string = this.searchSpacesUrl;
     const params: HttpParams = new HttpParams().set('q', searchText)
       .append('page[offset]', (pageSize * pageNumber).toString())
       .append('page[limit]', pageSize.toString());
@@ -161,6 +188,12 @@ export class SpaceService {
 
   // Currently serves to fetch the list of all spaces owned by a user.
   getSpacesByName(userName: string, pageSize: number = 20): Observable<Space[]> {
+    if (!userName) {
+      return observableThrowError('User name cannot be empty');
+    }
+    if (pageSize <= 0) {
+      return observableThrowError('Page limit cannot be less or equal 0');
+    }
     const url: string = `${this.namedSpacesUrl}/${encodeURIComponent(userName)}?page[limit]=${pageSize}`;
     return this.getSpacesDelegate(url, false);
   }
@@ -181,6 +214,9 @@ export class SpaceService {
   }
 
   getSpaceById(spaceId: string): Observable<Space> {
+    if (!spaceId) {
+      return observableThrowError('ID cannot be empty');
+    }
     const url: string = `${this.spacesUrl}/${encodeURIComponent(spaceId)}`;
     return this.http.get<Space>(url, { headers: this.headers })
       .pipe(
@@ -252,5 +288,4 @@ export class SpaceService {
         })
       );
   }
-
 }
