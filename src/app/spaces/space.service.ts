@@ -6,7 +6,6 @@ import {
 } from '@angular/common/http';
 
 import {
-  empty as emptyObservable,
   from as observableFrom,
   Observable,
   of as observableOf,
@@ -242,13 +241,16 @@ export class SpaceService {
 
     if (!space.relationships['owned-by'] || !space.relationships['owned-by'].data) {
       space.relationalData.creator = null;
-      return;
+      return observableThrowError('Relationships in space object not defined');
     }
     return this.userService.getUserByUserId(space.relationships['owned-by'].data.id)
       .pipe(
         map((owner: User): Space => {
           space.relationalData.creator = owner;
           return space;
+        }),
+        catchError(error => {
+          return this.handleError(error);
         })
       );
   }
@@ -267,9 +269,7 @@ export class SpaceService {
           this.userService.getUserByUserId(ownerId)
             .pipe(
               catchError(error => {
-                console.log('Error fetching user', ownerId, error);
-                this.handleError(error);
-                return emptyObservable();
+                return this.handleError(error);
               })
             )
         ),
