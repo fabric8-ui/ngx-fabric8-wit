@@ -27,6 +27,7 @@
     "test:unit": "karma start",
     "test:debug": "karma start --no-single-run --browsers Chrome",
     "test:browsers": "karma start --browsers Chrome,Firefox,Safari",
+    "test:watch": "karma start --auto-watch --no-single-run",
     "transpile": "gulp transpile",
     "transpile-less": "gulp transpile-less",
     "watch:library": "gulp watch"
