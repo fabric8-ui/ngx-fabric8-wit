@@ -47,8 +47,8 @@ export class SpaceService {
   }
 
   getSpaces(pageSize: number = 20): Observable<Space[]> {
-    if (pageSize <= 0) {
-      return observableThrowError('Page limit cannot be less or equal 0');
+    if (!pageSize || pageSize <= 0) {
+      return observableThrowError('Page limit cannot be undefined or less or equal 0');
     }
     const url: string = `${this.spacesUrl}?page[limit]=${pageSize}`;
     return this.getSpacesDelegate(url);
@@ -126,11 +126,11 @@ export class SpaceService {
     if (!searchText) {
       return observableThrowError('Search query cannot be undefined');
     }
-    if (pageSize <= 0) {
-      return observableThrowError('Page limit cannot be less or equal 0');
+    if (!pageSize || pageSize <= 0) {
+      return observableThrowError('Page limit cannot be undefined or less or equal 0');
     }
-    if (pageNumber < 0) {
-      return observableThrowError('Page offset cannot be less than 0');
+    if (typeof pageNumber !== 'number' || pageNumber < 0) {
+      return observableThrowError('Page offset cannot be undefined or less than 0');
     }
     const url: string = this.searchSpacesUrl;
     const params: HttpParams = new HttpParams().set('q', searchText)
@@ -158,7 +158,7 @@ export class SpaceService {
   // Currently serves to fetch the list of all spaces owned by a user.
   getSpacesByName(userName: string, pageSize: number = 20): Observable<Space[]> {
     if (!userName) {
-      return observableThrowError('User name cannot be empty');
+      return observableThrowError('User name cannot be undefined or empty');
     }
     if (pageSize <= 0) {
       return observableThrowError('Page limit cannot be less or equal 0');
